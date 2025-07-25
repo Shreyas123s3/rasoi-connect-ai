@@ -140,15 +140,18 @@ export default {
 		themes: [
 			{
 				cupcake: {
-					...require("daisyui/src/theming/themes")["cupcake"],
-					primary: "#59D35D",
+					"primary": "#59D35D",
 					"primary-content": "#000000",
-					secondary: "#4C9DB0",
-					accent: "#FFFEBF",
-					neutral: "#374151",
+					"secondary": "#4C9DB0",
+					"accent": "#FFFEBF",
+					"neutral": "#374151",
 					"base-100": "#ffffff",
 					"base-200": "#f9fafb",
 					"base-300": "#f3f4f6",
+					"info": "#3abff8",
+					"success": "#36d399",
+					"warning": "#fbbd23",
+					"error": "#f87272",
 				},
 			},
 		],
