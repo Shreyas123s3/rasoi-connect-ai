@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MapPin, Star, Clock, Phone, Truck, Filter, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -54,14 +53,14 @@ const Map = () => {
     }
   ];
 
-  const [mapStyle] = useState({
+  const mapStyle: React.CSSProperties = {
     width: '100%',
     height: '500px',
     background: 'linear-gradient(135deg, #4C9DB0 0%, #59D35D 100%)',
     position: 'relative',
     borderRadius: '16px',
     overflow: 'hidden'
-  });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
