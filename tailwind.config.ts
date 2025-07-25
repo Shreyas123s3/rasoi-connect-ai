@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,10 +18,6 @@ export default {
 			}
 		},
 		extend: {
-			fontFamily: {
-				'space': ['Space Grotesk', 'sans-serif'],
-				'inter': ['Inter', 'sans-serif'],
-			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -89,49 +84,13 @@ export default {
 					to: {
 						height: '0'
 					}
-				},
-				'typewriter': {
-					'0%': { width: '0' },
-					'100%': { width: '100%' }
-				},
-				'glow': {
-					'0%, 100%': { 
-						boxShadow: '0 0 5px rgba(89, 211, 93, 0.5)',
-						transform: 'scale(1)'
-					},
-					'50%': { 
-						boxShadow: '0 0 20px rgba(89, 211, 93, 0.8)',
-						transform: 'scale(1.05)'
-					}
-				},
-				'float': {
-					'0%, 100%': { transform: 'translateY(0)' },
-					'50%': { transform: 'translateY(-10px)' }
-				},
-				'ripple': {
-					'0%': { transform: 'scale(0)', opacity: '1' },
-					'100%': { transform: 'scale(4)', opacity: '0' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'typewriter': 'typewriter 3s steps(40) infinite',
-				'glow': 'glow 2s ease-in-out infinite',
-				'float': 'float 3s ease-in-out infinite',
-				'ripple': 'ripple 1.5s ease-out infinite'
+				'accordion-up': 'accordion-up 0.2s ease-out'
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate"), require("daisyui")],
-	daisyui: {
-		themes: ["cupcake", "pastel"],
-		base: true,
-		styled: true,
-		utils: true,
-		logs: true,
-		rtl: false,
-		prefix: "",
-		darkTheme: "dark",
-	},
+	plugins: [require("tailwindcss-animate")],
 } satisfies Config;

@@ -1,14 +1,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Settings, MessageCircle, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import EnhancedNavbar from '@/components/EnhancedNavbar';
-import { callGeminiApi } from '@/services/geminiApi';
+import Navbar from '@/components/Navbar';
 
 const Chat = () => {
   const [messages, setMessages] = useState([
@@ -58,7 +56,10 @@ const Chat = () => {
     setIsLoading(true);
 
     try {
-      const botResponse = await callGeminiApi(input);
+      // Mock API call - Replace with actual Gemini API implementation
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const botResponse = generateMockResponse(input);
       
       const botMessage = {
         id: Date.now() + 1,
@@ -69,17 +70,102 @@ const Chat = () => {
 
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      console.error('Chat error:', error);
       const errorMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: 'Sorry, I encountered an error. Please check your connection and try again.',
+        content: 'Sorry, I encountered an error. Please check your API key settings and try again.',
         timestamp: new Date().toLocaleTimeString()
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const generateMockResponse = (query) => {
+    const lowerQuery = query.toLowerCase();
+    
+    if (lowerQuery.includes('paneer') || lowerQuery.includes('cheese')) {
+      return `Based on current market data, here are the best paneer suppliers near you:
+
+🥛 **Fresh Dairy Co.** - ₹280/kg (2.1km away)
+• FSSAI verified, 4.8⭐ rating
+• Same-day delivery available
+• Join bulk order to save 12%
+
+🥛 **Mumbai Milk Center** - ₹290/kg (1.8km away)  
+• Organic certified, 4.7⭐ rating
+• Pickup available in 30 mins
+• Fresh batch arrives daily at 6 AM
+
+💡 **Tip**: Paneer prices typically drop by 8-10% after 6 PM. Consider evening purchases for better deals!
+
+Would you like me to connect you with any of these suppliers?`;
+    }
+    
+    if (lowerQuery.includes('onion') || lowerQuery.includes('alternative')) {
+      return `Great question! Here are excellent onion alternatives during price spikes:
+
+🧄 **Shallots** - ₹45/kg (vs onions at ₹65/kg)
+• Similar flavor profile, slightly sweeter
+• Available at Spice Garden Market
+
+🧄 **Leeks** - ₹40/kg 
+• Milder taste, works great in curries
+• Green Valley Suppliers has fresh stock
+
+🧄 **Garlic + Ginger paste** - ₹35/kg
+• Cost-effective flavor base
+• Multiple suppliers available nearby
+
+💰 **Cost Saving Tip**: Mix 60% shallots + 40% regular onions to save 25% without compromising taste!
+
+Current onion forecast: Prices expected to drop 15% in next 5 days. Consider waiting if possible.`;
+    }
+    
+    if (lowerQuery.includes('potato') || lowerQuery.includes('storage') || lowerQuery.includes('summer')) {
+      return `Here's the best way to store potatoes during Mumbai summers:
+
+🌡️ **Temperature Control**:
+• Keep between 10-15°C (use basement/coolest room)
+• Avoid direct sunlight and heat sources
+• Use mesh bags for air circulation
+
+💧 **Humidity Management**:
+• Store in dry, well-ventilated area
+• Avoid plastic bags (causes moisture buildup)
+• Check weekly and remove sprouted ones
+
+📦 **Storage Tips**:
+• Don't store with onions (both spoil faster)
+• Paper bags work better than plastic
+• Keep away from windows and cooking areas
+
+⚡ **Pro Tip**: Buy in smaller quantities during summer (15-20kg max) to reduce spoilage. Current potato prices are stable at ₹18/kg - good time to buy!
+
+Need help finding suppliers with proper cold storage facilities?`;
+    }
+    
+    return `I understand you're asking about "${query}". Here are some helpful insights:
+
+📊 **Current Market Overview**:
+• 25+ verified suppliers in your area
+• Average delivery time: 2-3 hours
+• Best prices typically between 6-8 PM
+
+🎯 **My Recommendations**:
+1. Check our supplier marketplace for competitive prices
+2. Join bulk orders to save 15-30%
+3. Set price alerts for your frequently used items
+4. Consider alternative products during price spikes
+
+💬 **How I can help you further**:
+• Find specific suppliers and compare prices
+• Suggest seasonal alternatives and substitutions  
+• Provide storage and procurement tips
+• Alert you about market trends and opportunities
+
+Feel free to ask more specific questions about suppliers, prices, or procurement strategies!`;
   };
 
   const handleQuickQuestion = (question) => {
@@ -95,34 +181,24 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
-      <EnhancedNavbar />
+      <Navbar />
       
       <div className="pt-24 pb-16 px-4">
         <div className="container mx-auto max-w-6xl">
           {/* Header */}
-          <motion.div 
-            className="text-center mb-8"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl font-black text-black mb-4 font-space">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-black text-black mb-4">
               AI <span className="text-[#59D35D]">ASSISTANT</span>
             </h1>
-            <p className="text-xl text-gray-700 max-w-2xl mx-auto font-inter">
+            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
               Get smart procurement advice, find suppliers, and discover market insights with GemBot
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid lg:grid-cols-4 gap-6">
             {/* Chat Interface */}
-            <motion.div 
-              className="lg:col-span-3"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <Card className="bg-white/90 backdrop-blur-sm border-2 border-gray-200 h-[600px] flex flex-col rounded-2xl shadow-lg">
+            <div className="lg:col-span-3">
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-gray-200 h-[600px] flex flex-col">
                 <CardHeader className="border-b border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -130,41 +206,41 @@ const Chat = () => {
                         <Bot className="h-6 w-6 text-black" />
                       </div>
                       <div>
-                        <CardTitle className="text-xl font-black text-black font-space">GemBot Assistant</CardTitle>
-                        <p className="text-sm text-gray-600 font-semibold font-inter">Powered by Gemini AI</p>
+                        <CardTitle className="text-xl font-black text-black">GemBot Assistant</CardTitle>
+                        <p className="text-sm text-gray-600 font-semibold">Powered by Gemini AI</p>
                       </div>
                     </div>
                     
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="border-2 border-gray-300 rounded-full">
+                        <Button variant="outline" size="sm" className="border-2 border-gray-300">
                           <Settings className="h-4 w-4" />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="rounded-2xl">
+                      <DialogContent>
                         <DialogHeader>
-                          <DialogTitle className="text-xl font-black font-space">AI Assistant Settings</DialogTitle>
+                          <DialogTitle className="text-xl font-black">AI Assistant Settings</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4">
                           <div>
-                            <Label className="text-sm font-bold font-inter">Gemini API Key</Label>
+                            <Label className="text-sm font-bold">Gemini API Key</Label>
                             <Input
                               type="password"
                               value={apiKey}
                               onChange={(e) => setApiKey(e.target.value)}
                               placeholder="Enter your Gemini API key"
-                              className="font-mono text-sm rounded-full"
+                              className="font-mono text-sm"
                             />
                             <p className="text-xs text-gray-500 mt-1">
                               Default key provided. You can update it for production use.
                             </p>
                           </div>
                           <div>
-                            <Label className="text-sm font-bold font-inter">Language</Label>
+                            <Label className="text-sm font-bold">Language</Label>
                             <select 
                               value={language} 
                               onChange={(e) => setLanguage(e.target.value)}
-                              className="w-full p-2 border-2 border-gray-200 rounded-full font-semibold"
+                              className="w-full p-2 border-2 border-gray-200 rounded-lg font-semibold"
                             >
                               <option value="en">English</option>
                               <option value="hi">हिंदी (Hindi)</option>
@@ -172,7 +248,7 @@ const Chat = () => {
                               <option value="ta">தமிழ் (Tamil)</option>
                             </select>
                           </div>
-                          <Button className="w-full bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold rounded-full">
+                          <Button className="w-full bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
                             Save Settings
                           </Button>
                         </div>
@@ -184,10 +260,8 @@ const Chat = () => {
                 {/* Messages */}
                 <CardContent className="flex-1 overflow-y-auto p-6 space-y-4">
                   {messages.map(message => (
-                    <motion.div
+                    <div
                       key={message.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
                       className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       {message.type === 'bot' && (
@@ -198,13 +272,13 @@ const Chat = () => {
                       
                       <div className={`max-w-[80%] ${message.type === 'user' ? 'order-2' : ''}`}>
                         <div
-                          className={`p-4 rounded-2xl ${
+                          className={`p-4 rounded-lg ${
                             message.type === 'user'
                               ? 'bg-[#4C9DB0] text-white ml-4'
                               : 'bg-gray-100 text-black mr-4'
                           }`}
                         >
-                          <div className="whitespace-pre-line text-sm font-medium font-inter">
+                          <div className="whitespace-pre-line text-sm font-medium">
                             {message.content}
                           </div>
                         </div>
@@ -218,25 +292,21 @@ const Chat = () => {
                           <User className="h-4 w-4 text-white" />
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   ))}
                   
                   {isLoading && (
-                    <motion.div 
-                      className="flex gap-3"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                    >
+                    <div className="flex gap-3">
                       <div className="bg-[#59D35D] p-2 rounded-full">
                         <Bot className="h-4 w-4 text-black" />
                       </div>
-                      <div className="bg-gray-100 p-4 rounded-2xl">
+                      <div className="bg-gray-100 p-4 rounded-lg">
                         <div className="flex items-center gap-2">
                           <Loader2 className="h-4 w-4 animate-spin" />
                           <span className="text-sm font-medium text-gray-600">GemBot is thinking...</span>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   )}
                   
                   <div ref={messagesEndRef} />
@@ -250,98 +320,92 @@ const Chat = () => {
                       onChange={(e) => setInput(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Ask about suppliers, prices, or procurement tips..."
-                      className="font-semibold rounded-full"
+                      className="font-semibold"
                       disabled={isLoading}
                     />
                     <Button 
                       onClick={handleSendMessage}
                       disabled={!input.trim() || isLoading}
-                      className="bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold px-6 rounded-full"
+                      className="bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold px-6"
                     >
                       <Send className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </Card>
-            </motion.div>
+            </div>
 
-            {/* Sidebar */}
-            <motion.div 
-              className="lg:col-span-1 space-y-6"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
+            {/* Quick Actions Sidebar */}
+            <div className="lg:col-span-1 space-y-6">
               {/* Quick Questions */}
-              <Card className="bg-white/90 backdrop-blur-sm border-2 border-gray-200 rounded-2xl">
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-gray-200">
                 <CardHeader>
-                  <CardTitle className="text-lg font-black text-black flex items-center font-space">
+                  <CardTitle className="text-lg font-black text-black flex items-center">
                     <MessageCircle className="h-5 w-5 mr-2" />
                     Quick Questions
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {quickQuestions.map((question, index) => (
-                    <motion.button
+                    <Button
                       key={index}
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-left justify-start border-2 border-gray-200 hover:bg-gray-50 text-xs font-semibold p-3 h-auto"
                       onClick={() => handleQuickQuestion(question)}
-                      className="w-full text-left justify-start border-2 border-gray-200 hover:bg-gray-50 text-xs font-semibold p-3 h-auto rounded-full transition-all duration-300 hover:scale-105"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
                     >
                       {question}
-                    </motion.button>
+                    </Button>
                   ))}
                 </CardContent>
               </Card>
 
               {/* AI Features */}
-              <Card className="bg-gradient-to-br from-[#59D35D] to-[#4BC44F] border-0 rounded-2xl">
+              <Card className="bg-gradient-to-br from-[#59D35D] to-[#4BC44F] border-0">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-black text-black mb-4 font-space">AI Capabilities</h3>
+                  <h3 className="text-lg font-black text-black mb-4">AI Capabilities</h3>
                   <div className="space-y-3 text-black text-sm">
-                    {[
-                      'Multilingual support',
-                      'Real-time market data',
-                      'Smart recommendations',
-                      'Procurement insights'
-                    ].map((item, index) => (
-                      <motion.div 
-                        key={index}
-                        className="flex items-center"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                        <span className="font-semibold font-inter">{item}</span>
-                      </motion.div>
-                    ))}
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
+                      <span className="font-semibold">Multilingual support</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
+                      <span className="font-semibold">Real-time market data</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
+                      <span className="font-semibold">Smart recommendations</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
+                      <span className="font-semibold">Procurement insights</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Usage Stats */}
-              <Card className="bg-white/90 backdrop-blur-sm border-2 border-gray-200 rounded-2xl">
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-gray-200">
                 <CardHeader>
-                  <CardTitle className="text-lg font-black text-black font-space">Today's Usage</CardTitle>
+                  <CardTitle className="text-lg font-black text-black">Today's Usage</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-600 font-inter">Queries</span>
+                    <span className="font-semibold text-gray-600">Queries</span>
                     <span className="font-bold text-[#59D35D]">{messages.filter(m => m.type === 'user').length}/50</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-600 font-inter">Suppliers Found</span>
+                    <span className="font-semibold text-gray-600">Suppliers Found</span>
                     <span className="font-bold text-[#59D35D]">12</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-600 font-inter">Savings Found</span>
+                    <span className="font-semibold text-gray-600">Savings Found</span>
                     <span className="font-bold text-green-600">₹2,340</span>
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
