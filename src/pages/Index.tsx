@@ -1,10 +1,10 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Store, Users, Bot, TrendingUp, MapPin, Bell, Star, Shield, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
-import LightRays from '@/components/LightRays';
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -44,27 +44,11 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR] relative">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
       <Navbar />
       
-      {/* Light Rays Component */}
-      <div style={{ width: '100%', height: '600px', position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
-        <LightRays
-          raysOrigin="top-center"
-          raysColor="#00ffff"
-          raysSpeed={1.5}
-          lightSpread={0.8}
-          rayLength={1.2}
-          followMouse={true}
-          mouseInfluence={0.1}
-          noiseAmount={0.1}
-          distortion={0.05}
-          className="custom-rays"
-        />
-      </div>
-      
       {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4 relative z-10">
+      <section className="pt-24 pb-16 px-4">
         <div className="container mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-6xl md:text-8xl font-black text-black mb-4 leading-tight">
@@ -108,7 +92,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-white/50 relative z-10">
+      <section className="py-16 px-4 bg-white/50">
         <div className="container mx-auto">
           <h2 className="text-5xl font-black text-center text-black mb-16">
             POWERFUL FEATURES
@@ -159,7 +143,7 @@ const Index = () => {
       </section>
 
       {/* Trust Indicators */}
-      <section className="py-16 px-4 bg-[#4C9DB0] relative z-10">
+      <section className="py-16 px-4 bg-[#4C9DB0]">
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-black text-white mb-12">
             TRUSTED BY VENDORS ACROSS INDIA
@@ -188,7 +172,7 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 bg-black relative z-10">
+      <section className="py-16 px-4 bg-black">
         <div className="container mx-auto text-center">
           <h2 className="text-5xl font-black text-white mb-6">
             READY TO TRANSFORM YOUR SOURCING?
