@@ -45,6 +45,7 @@ const Profile = () => {
     
     setLoading(true);
     try {
+      console.log('Fetching profile for user:', user.id);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -61,6 +62,7 @@ const Profile = () => {
         return;
       }
 
+      console.log('Profile data fetched:', data);
       if (data) {
         setProfileData({
           full_name: data.full_name || '',
@@ -73,6 +75,11 @@ const Profile = () => {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch profile data",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -83,10 +90,11 @@ const Profile = () => {
     
     setSaving(true);
     try {
+      console.log('Saving profile data:', profileData);
       // Exclude the 'about' field since it doesn't exist in the database
       const { about, ...profileDataWithoutAbout } = profileData;
       
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .upsert({
           id: user.id,
@@ -101,12 +109,13 @@ const Profile = () => {
         console.error('Error updating profile:', error);
         toast({
           title: "Error",
-          description: "Failed to update profile",
+          description: `Failed to update profile: ${error.message}`,
           variant: "destructive",
         });
         return;
       }
 
+      console.log('Profile updated successfully:', data);
       toast({
         title: "Success",
         description: "Profile updated successfully",
@@ -133,7 +142,7 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 flex items-center justify-center p-4 overflow-y-auto">
         <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
           <CardContent className="text-center p-8">
             <LogIn className="mx-auto mb-4 h-16 w-16 text-wisteria" />
@@ -153,7 +162,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 flex items-center justify-center overflow-y-auto">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-wisteria mx-auto mb-4"></div>
           <p className="text-black font-semibold">Loading profile...</p>
@@ -163,7 +172,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-4 overflow-y-auto">
       <div className="max-w-2xl mx-auto">
         <Card className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
           <CardHeader className="text-center">

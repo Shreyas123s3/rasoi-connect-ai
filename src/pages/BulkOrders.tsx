@@ -39,7 +39,7 @@ const BulkOrders = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-wisteria mx-auto mb-4"></div>
@@ -51,7 +51,7 @@ const BulkOrders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6 overflow-y-auto">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -69,7 +69,6 @@ const BulkOrders = () => {
           )}
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
             <CardContent className="p-6">
@@ -112,7 +111,6 @@ const BulkOrders = () => {
           </Card>
         </div>
 
-        {/* Live Bulk Orders */}
         <div className="mb-8">
           <h2 className="text-2xl font-black text-black mb-6">Live Bulk Orders</h2>
           {bulkOrders && bulkOrders.length > 0 ? (
@@ -214,7 +212,6 @@ const BulkOrders = () => {
           )}
         </div>
 
-        {/* Bulk Order Form Modal */}
         {showForm && (
           <BulkOrderForm
             onClose={() => setShowForm(false)}
