@@ -1,5 +1,4 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Send, Bot, User, Settings, MessageCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,17 +24,9 @@ const Chat = () => {
   const [language, setLanguage] = useState('en');
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   const quickQuestions = [
     "Find the cheapest paneer near me",
-    "Suggest alternatives to onions this season",
+    "Suggest alternatives to onions this season", 
     "How to store potatoes in summer?",
     "What are today's vegetable prices?",
     "Best suppliers for spices in Mumbai",
