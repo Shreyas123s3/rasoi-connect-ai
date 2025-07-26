@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { TrendingUp, TrendingDown, Calendar, MapPin, Filter, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,13 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/Navbar';
 import AuthGuard from '@/components/AuthGuard';
+import { useAlerts } from '@/hooks/useAlerts';
+import ConfettiAlert from '@/components/ConfettiAlert';
 
 const Market = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [locationFilter, setLocationFilter] = useState('All');
+  const [showConfetti, setShowConfetti] = useState<string | null>(null);
+  const { addAlert } = useAlerts();
 
-  // Mock data for products
+  // Mock data for products - restored to show many products
   const products = [
     {
       id: '1',
@@ -74,6 +79,66 @@ const Market = () => {
       high_24h: 185,
       low_24h: 175,
       location: 'Chennai Market'
+    },
+    {
+      id: '7',
+      name: 'Green Chilies',
+      category: 'Vegetables',
+      current_price: 60,
+      price_change: 12.5,
+      high_24h: 65,
+      low_24h: 55,
+      location: 'Hyderabad Market'
+    },
+    {
+      id: '8',
+      name: 'Coriander',
+      category: 'Spices',
+      current_price: 220,
+      price_change: -3.2,
+      high_24h: 230,
+      low_24h: 210,
+      location: 'Pune Market'
+    },
+    {
+      id: '9',
+      name: 'Coconut Oil',
+      category: 'Oil',
+      current_price: 140,
+      price_change: 2.8,
+      high_24h: 145,
+      low_24h: 135,
+      location: 'Kerala Market'
+    },
+    {
+      id: '10',
+      name: 'Potatoes',
+      category: 'Vegetables',
+      current_price: 25,
+      price_change: -1.8,
+      high_24h: 27,
+      low_24h: 23,
+      location: 'Punjab Market'
+    },
+    {
+      id: '11',
+      name: 'Red Lentils',
+      category: 'Grains',
+      current_price: 95,
+      price_change: 4.2,
+      high_24h: 98,
+      low_24h: 90,
+      location: 'Rajasthan Market'
+    },
+    {
+      id: '12',
+      name: 'Ginger',
+      category: 'Spices',
+      current_price: 80,
+      price_change: 15.3,
+      high_24h: 85,
+      low_24h: 70,
+      location: 'Karnataka Market'
     }
   ];
 
@@ -84,6 +149,11 @@ const Market = () => {
   });
 
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
+
+  const handleSetAlert = (productName: string, currentPrice: number) => {
+    addAlert(productName, currentPrice);
+    setShowConfetti(productName);
+  };
 
   return (
     <AuthGuard>
@@ -186,7 +256,10 @@ const Market = () => {
                       <span className="font-semibold">{product.location}</span>
                     </div>
 
-                    <Button className="w-full bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
+                    <Button 
+                      className="w-full bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold"
+                      onClick={() => handleSetAlert(product.name, product.current_price)}
+                    >
                       Set Price Alert
                     </Button>
                   </CardContent>
@@ -195,6 +268,13 @@ const Market = () => {
             </div>
           </div>
         </div>
+
+        {showConfetti && (
+          <ConfettiAlert
+            productName={showConfetti}
+            onComplete={() => setShowConfetti(null)}
+          />
+        )}
       </div>
     </AuthGuard>
   );
