@@ -22,17 +22,73 @@ interface SupplierModalProps {
 }
 
 const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, onClose, productName }) => {
-  // Mock suppliers data based on product
+  // Generate unique suppliers data based on specific product
   const getSuppliers = (product: string): Supplier[] => {
-    const baseSuppliers = [
-      { name: 'Fresh Farms Co.', quantity: '100kg', price: 42, rating: 4.8, location: 'Mumbai', phone: '+91 98765 43210' },
-      { name: 'Green Valley Suppliers', quantity: '250kg', price: 40, rating: 4.6, location: 'Pune', phone: '+91 87654 32109' },
-      { name: 'Organic Direct', quantity: '150kg', price: 44, rating: 4.9, location: 'Delhi', phone: '+91 76543 21098' },
-      { name: 'Farm Fresh Ltd.', quantity: '300kg', price: 39, rating: 4.5, location: 'Bangalore', phone: '+91 65432 10987' },
-      { name: 'Quality Produce', quantity: '200kg', price: 43, rating: 4.7, location: 'Chennai', phone: '+91 54321 09876' }
-    ];
+    const suppliersByProduct: Record<string, Supplier[]> = {
+      'Onions': [
+        { name: 'Maharashtra Onion Co.', quantity: '500kg', price: 40, rating: 4.8, location: 'Nashik', phone: '+91 98765 43210' },
+        { name: 'Rajasthan Bulb Traders', quantity: '300kg', price: 44, rating: 4.5, location: 'Jodhpur', phone: '+91 87654 32109' },
+        { name: 'Gujarat Onion Express', quantity: '250kg', price: 42, rating: 4.7, location: 'Rajkot', phone: '+91 76543 21098' },
+        { name: 'Karnataka Red Onions', quantity: '400kg', price: 41, rating: 4.6, location: 'Belgaum', phone: '+91 65432 10987' }
+      ],
+      'Tomatoes': [
+        { name: 'Andhra Fresh Tomatoes', quantity: '200kg', price: 33, rating: 4.9, location: 'Anantapur', phone: '+91 98765 11111' },
+        { name: 'Karnataka Tomato Hub', quantity: '350kg', price: 36, rating: 4.4, location: 'Kolar', phone: '+91 87654 22222' },
+        { name: 'Tamil Nadu Red Gold', quantity: '180kg', price: 34, rating: 4.8, location: 'Salem', phone: '+91 76543 33333' },
+        { name: 'Maharashtra Tomato Co.', quantity: '280kg', price: 35, rating: 4.6, location: 'Pune', phone: '+91 65432 44444' }
+      ],
+      'Rice (Basmati)': [
+        { name: 'Punjab Basmati Mills', quantity: '1000kg', price: 82, rating: 4.9, location: 'Amritsar', phone: '+91 98765 55555' },
+        { name: 'Haryana Premium Rice', quantity: '800kg', price: 86, rating: 4.7, location: 'Karnal', phone: '+91 87654 66666' },
+        { name: 'UP Basmati Traders', quantity: '1200kg', price: 84, rating: 4.8, location: 'Meerut', phone: '+91 76543 77777' },
+        { name: 'Delhi Rice Exchange', quantity: '600kg', price: 88, rating: 4.5, location: 'Delhi', phone: '+91 65432 88888' }
+      ],
+      'Cooking Oil': [
+        { name: 'Soybean Oil Syndicate', quantity: '50L cans', price: 175, rating: 4.6, location: 'Indore', phone: '+91 98765 99999' },
+        { name: 'Sunflower Oil Corp', quantity: '30L cans', price: 182, rating: 4.4, location: 'Hyderabad', phone: '+91 87654 00000' },
+        { name: 'Refined Oil Traders', quantity: '40L cans', price: 178, rating: 4.7, location: 'Ahmedabad', phone: '+91 76543 11112' },
+        { name: 'Premium Oils Ltd', quantity: '25L cans', price: 185, rating: 4.5, location: 'Mumbai', phone: '+91 65432 22223' }
+      ],
+      'Turmeric Powder': [
+        { name: 'Andhra Spice Mills', quantity: '50kg', price: 415, rating: 4.8, location: 'Guntur', phone: '+91 98765 33334' },
+        { name: 'Tamil Turmeric Co.', quantity: '75kg', price: 425, rating: 4.6, location: 'Erode', phone: '+91 87654 44445' },
+        { name: 'Karnataka Spice Hub', quantity: '60kg', price: 420, rating: 4.7, location: 'Mysore', phone: '+91 76543 55556' },
+        { name: 'Maharashtra Spices', quantity: '40kg', price: 418, rating: 4.5, location: 'Kolhapur', phone: '+91 65432 66667' }
+      ],
+      'Wheat Flour': [
+        { name: 'Punjab Flour Mills', quantity: '500kg', price: 30, rating: 4.7, location: 'Ludhiana', phone: '+91 98765 77778' },
+        { name: 'Haryana Wheat Co.', quantity: '700kg', price: 33, rating: 4.5, location: 'Rohtak', phone: '+91 87654 88889' },
+        { name: 'UP Flour Traders', quantity: '400kg', price: 31, rating: 4.8, location: 'Kanpur', phone: '+91 76543 99990' },
+        { name: 'Rajasthan Mills Ltd', quantity: '600kg', price: 34, rating: 4.4, location: 'Jaipur', phone: '+91 65432 00001' }
+      ],
+      'Potatoes': [
+        { name: 'UP Potato Syndicate', quantity: '800kg', price: 26, rating: 4.6, location: 'Agra', phone: '+91 98765 11112' },
+        { name: 'Punjab Spud Co.', quantity: '1000kg', price: 29, rating: 4.8, location: 'Jalandhar', phone: '+91 87654 22223' },
+        { name: 'West Bengal Potatoes', quantity: '600kg', price: 27, rating: 4.5, location: 'Hooghly', phone: '+91 76543 33334' },
+        { name: 'Bihar Potato Hub', quantity: '900kg', price: 28, rating: 4.7, location: 'Patna', phone: '+91 65432 44445' }
+      ],
+      'Apples': [
+        { name: 'Kashmir Apple Orchards', quantity: '200kg', price: 145, rating: 4.9, location: 'Srinagar', phone: '+91 98765 55556' },
+        { name: 'Himachal Premium Fruits', quantity: '150kg', price: 152, rating: 4.7, location: 'Shimla', phone: '+91 87654 66667' },
+        { name: 'Uttarakhand Apple Co.', quantity: '180kg', price: 148, rating: 4.8, location: 'Dehradun', phone: '+91 76543 77778' },
+        { name: 'Punjab Apple Traders', quantity: '120kg', price: 155, rating: 4.6, location: 'Hoshiarpur', phone: '+91 65432 88889' }
+      ]
+    };
+
+    // Get specific suppliers for the product, or default suppliers if product not found
+    const productSuppliers = suppliersByProduct[product];
     
-    return baseSuppliers.slice(0, Math.floor(Math.random() * 2) + 4);
+    if (productSuppliers) {
+      return productSuppliers;
+    }
+
+    // Fallback suppliers for products not specifically defined
+    return [
+      { name: 'Local Fresh Suppliers', quantity: '100kg', price: 50, rating: 4.5, location: 'Mumbai', phone: '+91 98765 43210' },
+      { name: 'Quality Produce Co.', quantity: '150kg', price: 48, rating: 4.7, location: 'Delhi', phone: '+91 87654 32109' },
+      { name: 'Farm Direct Ltd.', quantity: '200kg', price: 52, rating: 4.6, location: 'Bangalore', phone: '+91 76543 21098' },
+      { name: 'Premium Foods Inc.', quantity: '120kg', price: 55, rating: 4.8, location: 'Chennai', phone: '+91 65432 10987' }
+    ];
   };
 
   const suppliers = getSuppliers(productName);

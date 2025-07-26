@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Calendar, BarChart3, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -229,11 +228,11 @@ const Market = () => {
     setSupplierModalOpen(true);
   };
 
-  const handleSetAlert = (productName: string) => {
+  const handleSetAlert = (productName: string, currentPrice: number) => {
     setConfettiProduct(productName);
     setShowConfetti(true);
-    addAlert(productName);
-    console.log(`Alert set for: ${productName}`);
+    addAlert(productName, currentPrice);
+    console.log(`Alert set for: ${productName} at price: ₹${currentPrice}`);
   };
 
   const handleConfettiComplete = () => {
@@ -425,7 +424,7 @@ const Market = () => {
                     <Button 
                       variant="outline" 
                       className="border-2 border-wisteria/50 font-bold hover:bg-wisteria/10"
-                      onClick={() => handleSetAlert(item.name)}
+                      onClick={() => handleSetAlert(item.name, item.currentPrice)}
                     >
                       Set Alert
                     </Button>
