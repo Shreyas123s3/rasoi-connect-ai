@@ -186,6 +186,9 @@ const DotGrid = ({
   }, [buildGrid]);
 
   useEffect(() => {
+    // Check if we're in a browser environment
+    if (typeof window === "undefined") return;
+
     const onMove = (e: MouseEvent) => {
       const now = performance.now();
       const pr = pointerRef.current;
@@ -268,12 +271,14 @@ const DotGrid = ({
     };
 
     const throttledMove = throttle(onMove, 50);
-    window.addEventListener("mousemove", throttledMove, { passive: true } as EventListenerOptions);
-    window.addEventListener("click", onClick);
+    
+    // Add event listeners with proper type safety
+    window.addEventListener("mousemove", throttledMove as EventListener, { passive: true });
+    window.addEventListener("click", onClick as EventListener);
 
     return () => {
-      window.removeEventListener("mousemove", throttledMove);
-      window.removeEventListener("click", onClick);
+      window.removeEventListener("mousemove", throttledMove as EventListener);
+      window.removeEventListener("click", onClick as EventListener);
     };
   }, [
     maxSpeed,
