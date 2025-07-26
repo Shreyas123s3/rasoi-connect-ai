@@ -116,7 +116,7 @@ const Market = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
+    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30">
       <Navbar />
       
       <div className="pt-24 pb-16 px-4">
@@ -132,7 +132,7 @@ const Market = () => {
           </div>
 
           {/* Controls */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-gray-200">
+          <div className="bg-gradient-to-r from-wisteria/20 to-lemon/30 backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-wisteria/30">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Period Selection */}
               <div>
@@ -145,7 +145,7 @@ const Market = () => {
                       onClick={() => setSelectedPeriod(period.value)}
                       className={selectedPeriod === period.value 
                         ? "bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold" 
-                        : "border-2 border-gray-300 font-bold hover:bg-gray-100"
+                        : "border-2 border-wisteria/50 bg-white/80 font-bold hover:bg-wisteria/10"
                       }
                     >
                       <Calendar className="h-4 w-4 mr-2" />
@@ -167,7 +167,7 @@ const Market = () => {
                       size="sm"
                       className={selectedCategory === category 
                         ? "bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold" 
-                        : "border-2 border-gray-300 font-bold hover:bg-gray-100"
+                        : "border-2 border-wisteria/50 bg-white/80 font-bold hover:bg-wisteria/10"
                       }
                     >
                       {category}
@@ -180,28 +180,28 @@ const Market = () => {
 
           {/* Market Overview Stats */}
           <div className="grid md:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+            <Card className="bg-gradient-to-br from-white to-lemon/30 backdrop-blur-sm border-2 border-wisteria/20">
               <CardContent className="p-6 text-center">
                 <TrendingUp className="h-8 w-8 text-green-500 mx-auto mb-2" />
                 <div className="text-2xl font-black text-green-600">12</div>
                 <div className="text-sm font-semibold text-gray-600">Items Rising</div>
               </CardContent>
             </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+            <Card className="bg-gradient-to-br from-white to-wisteria/30 backdrop-blur-sm border-2 border-wisteria/20">
               <CardContent className="p-6 text-center">
                 <TrendingDown className="h-8 w-8 text-red-500 mx-auto mb-2" />
                 <div className="text-2xl font-black text-red-600">8</div>
                 <div className="text-sm font-semibold text-gray-600">Items Falling</div>
               </CardContent>
             </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+            <Card className="bg-gradient-to-br from-lemon/40 to-white backdrop-blur-sm border-2 border-wisteria/20">
               <CardContent className="p-6 text-center">
                 <AlertTriangle className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
                 <div className="text-2xl font-black text-yellow-600">3</div>
                 <div className="text-sm font-semibold text-gray-600">High Volatility</div>
               </CardContent>
             </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+            <Card className="bg-gradient-to-br from-wisteria/30 to-white backdrop-blur-sm border-2 border-wisteria/20">
               <CardContent className="p-6 text-center">
                 <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                 <div className="text-2xl font-black text-blue-600">45</div>
@@ -213,14 +213,14 @@ const Market = () => {
           {/* Price Cards */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredData.map(item => (
-              <Card key={item.name} className="bg-white border-2 border-gray-200 hover:shadow-xl transition-all duration-300">
+              <Card key={item.name} className="bg-white border-2 border-wisteria/30 hover:shadow-xl hover:border-wisteria/50 transition-all duration-300">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-xl font-black text-black mb-1">
                         {item.name}
                       </CardTitle>
-                      <Badge variant="outline" className="text-xs font-semibold mb-2">
+                      <Badge variant="outline" className="text-xs font-semibold mb-2 border-wisteria/40 text-wisteria bg-wisteria/10">
                         {item.category}
                       </Badge>
                     </div>
@@ -274,7 +274,7 @@ const Market = () => {
                     <Button className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
                       Find Suppliers
                     </Button>
-                    <Button variant="outline" className="border-2 border-gray-300 font-bold">
+                    <Button variant="outline" className="border-2 border-wisteria/50 font-bold hover:bg-wisteria/10">
                       Set Alert
                     </Button>
                   </div>
@@ -299,13 +299,13 @@ const Market = () => {
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-r from-orange-400 to-orange-500 border-0">
+              <Card className="bg-gradient-to-r from-wisteria to-wisteria/80 border-0">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-black text-white mb-2">Price Alert</h3>
-                  <p className="text-orange-100 mb-4">
+                  <p className="text-white/90 mb-4">
                     Cooking oil prices showing unusual volatility. Monitor closely for bulk orders.
                   </p>
-                  <Button className="bg-white text-orange-600 hover:bg-gray-100 font-bold">
+                  <Button className="bg-white text-wisteria hover:bg-gray-100 font-bold">
                     Set Price Alert
                   </Button>
                 </CardContent>

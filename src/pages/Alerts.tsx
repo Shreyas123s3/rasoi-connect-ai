@@ -117,7 +117,7 @@ const Alerts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
+    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30">
       <Navbar />
       
       <div className="pt-24 pb-16 px-4">
@@ -136,7 +136,7 @@ const Alerts = () => {
             {/* Alerts Management */}
             <div className="lg:col-span-2">
               {/* Add Alert */}
-              <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200 mb-8">
+              <Card className="bg-gradient-to-r from-wisteria/20 to-lemon/30 backdrop-blur-sm border-2 border-wisteria/30 mb-8">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-2xl font-black text-black">Create New Alert</CardTitle>
@@ -147,7 +147,7 @@ const Alerts = () => {
                           Add Alert
                         </Button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className="bg-white border-2 border-wisteria/30">
                         <DialogHeader>
                           <DialogTitle className="text-xl font-black">Create Price Alert</DialogTitle>
                         </DialogHeader>
@@ -158,13 +158,13 @@ const Alerts = () => {
                               value={newAlert.product}
                               onChange={(e) => setNewAlert({...newAlert, product: e.target.value})}
                               placeholder="e.g., Onions, Rice, Cooking Oil"
-                              className="font-semibold"
+                              className="font-semibold border-wisteria/30"
                             />
                           </div>
                           <div>
                             <Label className="text-sm font-bold">Alert Condition</Label>
                             <Select value={newAlert.condition} onValueChange={(value) => setNewAlert({...newAlert, condition: value})}>
-                              <SelectTrigger className="font-semibold">
+                              <SelectTrigger className="font-semibold border-wisteria/30">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -181,13 +181,13 @@ const Alerts = () => {
                                 value={newAlert.threshold}
                                 onChange={(e) => setNewAlert({...newAlert, threshold: e.target.value})}
                                 placeholder="0"
-                                className="font-semibold"
+                                className="font-semibold border-wisteria/30"
                               />
                             </div>
                             <div>
                               <Label className="text-sm font-bold">Unit</Label>
                               <Select value={newAlert.unit} onValueChange={(value) => setNewAlert({...newAlert, unit: value})}>
-                                <SelectTrigger className="font-semibold">
+                                <SelectTrigger className="font-semibold border-wisteria/30">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -209,7 +209,7 @@ const Alerts = () => {
               </Card>
 
               {/* Active Alerts */}
-              <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
                 <CardHeader>
                   <CardTitle className="text-2xl font-black text-black">Your Alerts</CardTitle>
                 </CardHeader>
@@ -218,7 +218,7 @@ const Alerts = () => {
                     {alerts.map(alert => {
                       const status = getAlertStatus(alert);
                       return (
-                        <div key={alert.id} className="flex items-center justify-between p-4 bg-white rounded-lg border-2 border-gray-200">
+                        <div key={alert.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-lemon/20 to-wisteria/10 rounded-lg border-2 border-wisteria/20">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
                               <h3 className="font-black text-lg text-black">{alert.product}</h3>
@@ -241,7 +241,7 @@ const Alerts = () => {
                                 View Deals
                               </Button>
                             )}
-                            <Button size="sm" variant="outline" className="border-2 border-gray-300">
+                            <Button size="sm" variant="outline" className="border-2 border-wisteria/40 hover:bg-wisteria/10">
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button 
@@ -263,7 +263,7 @@ const Alerts = () => {
 
             {/* Notifications Panel */}
             <div className="lg:col-span-1">
-              <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+              <Card className="bg-gradient-to-br from-white to-lemon/30 backdrop-blur-sm border-2 border-wisteria/30">
                 <CardHeader>
                   <CardTitle className="text-xl font-black text-black flex items-center">
                     <Bell className="h-5 w-5 mr-2" />
@@ -275,7 +275,7 @@ const Alerts = () => {
                     {recentNotifications.map(notification => (
                       <div 
                         key={notification.id} 
-                        className={`p-4 rounded-lg border-2 ${notification.read ? 'bg-gray-50 border-gray-200' : 'bg-blue-50 border-blue-200'}`}
+                        className={`p-4 rounded-lg border-2 ${notification.read ? 'bg-gray-50 border-gray-200' : 'bg-gradient-to-r from-wisteria/20 to-lemon/20 border-wisteria/30'}`}
                       >
                         <div className="flex items-start gap-3">
                           {getNotificationIcon(notification.type)}
@@ -286,21 +286,21 @@ const Alerts = () => {
                             <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
                           </div>
                           {!notification.read && (
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <div className="w-2 h-2 bg-wisteria rounded-full"></div>
                           )}
                         </div>
                       </div>
                     ))}
                   </div>
                   
-                  <Button variant="outline" className="w-full mt-4 border-2 border-gray-300 font-bold">
+                  <Button variant="outline" className="w-full mt-4 border-2 border-wisteria/40 font-bold hover:bg-wisteria/10">
                     View All Notifications
                   </Button>
                 </CardContent>
               </Card>
 
               {/* Alert Settings */}
-              <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200 mt-6">
+              <Card className="bg-gradient-to-br from-wisteria/30 to-white backdrop-blur-sm border-2 border-wisteria/30 mt-6">
                 <CardHeader>
                   <CardTitle className="text-xl font-black text-black">Notification Settings</CardTitle>
                 </CardHeader>
@@ -314,7 +314,7 @@ const Alerts = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">SMS Alerts</span>
-                    <Button size="sm" variant="outline" className="border-2 border-gray-300">
+                    <Button size="sm" variant="outline" className="border-2 border-wisteria/40 hover:bg-wisteria/10">
                       Enable
                     </Button>
                   </div>
@@ -326,7 +326,7 @@ const Alerts = () => {
                     </Button>
                   </div>
                   
-                  <Button className="w-full bg-black hover:bg-gray-800 text-white font-bold mt-4">
+                  <Button className="w-full bg-wisteria hover:bg-wisteria/90 text-white font-bold mt-4">
                     Update Settings
                   </Button>
                 </CardContent>
