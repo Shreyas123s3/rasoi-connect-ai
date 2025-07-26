@@ -77,13 +77,13 @@ const Index = () => {
             </Link>
           </div>
 
-          {/* Stats */}
+          {/* Enhanced Stats with Lemon background and Wisteria accents */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
             {stats.map((stat, index) => (
-              <Card key={index} className="bg-white/80 backdrop-blur-sm border-2 border-gray-200 hover:shadow-lg transition-all">
+              <Card key={index} className="bg-lemon backdrop-blur-sm border-2 border-wisteria hover:shadow-lg hover:shadow-wisteria/20 transition-all">
                 <CardContent className="p-6 text-center">
-                  <div className="text-3xl font-black text-[#59D35D] mb-2">{stat.value}</div>
-                  <div className="text-sm font-semibold text-gray-700">{stat.label}</div>
+                  <div className="text-3xl font-black text-wisteria mb-2">{stat.value}</div>
+                  <div className="text-sm font-semibold text-gray-800">{stat.label}</div>
                 </CardContent>
               </Card>
             ))}
@@ -91,10 +91,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 px-4 bg-white/50">
+      {/* Features Section with alternating Lemon backgrounds */}
+      <section className="py-16 px-4 bg-lemon">
         <div className="container mx-auto">
-          <h2 className="text-5xl font-black text-center text-black mb-16">
+          <h2 className="text-5xl font-black text-center text-wisteria mb-16">
             POWERFUL FEATURES
           </h2>
           
@@ -102,7 +102,7 @@ const Index = () => {
             {features.map((feature, index) => (
               <Card 
                 key={index} 
-                className="group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-white border-2 border-gray-200"
+                className="group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-white border-2 border-wisteria/30 hover:border-wisteria"
                 onMouseEnter={() => setActiveFeature(index)}
               >
                 <CardContent className="p-8 text-center">
@@ -142,30 +142,30 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Trust Indicators */}
-      <section className="py-16 px-4 bg-[#4C9DB0]">
+      {/* Trust Indicators - Enhanced with Wisteria background */}
+      <section className="py-16 px-4 bg-wisteria">
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-black text-white mb-12">
             TRUSTED BY VENDORS ACROSS INDIA
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-8">
+            <div className="bg-lemon rounded-lg p-8 border-2 border-white/20">
               <Shield className="h-12 w-12 text-[#59D35D] mx-auto mb-4" />
-              <h3 className="text-xl font-black text-black mb-3">100% Verified</h3>
-              <p className="text-gray-700">All suppliers are FSSAI certified and government registered</p>
+              <h3 className="text-xl font-black text-wisteria mb-3">100% Verified</h3>
+              <p className="text-gray-800">All suppliers are FSSAI certified and government registered</p>
             </div>
             
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-8">
+            <div className="bg-lemon rounded-lg p-8 border-2 border-white/20">
               <Clock className="h-12 w-12 text-[#59D35D] mx-auto mb-4" />
-              <h3 className="text-xl font-black text-black mb-3">Fast Delivery</h3>
-              <p className="text-gray-700">Same-day delivery available for local suppliers</p>
+              <h3 className="text-xl font-black text-wisteria mb-3">Fast Delivery</h3>
+              <p className="text-gray-800">Same-day delivery available for local suppliers</p>
             </div>
             
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-8">
+            <div className="bg-lemon rounded-lg p-8 border-2 border-white/20">
               <Star className="h-12 w-12 text-[#59D35D] mx-auto mb-4" />
-              <h3 className="text-xl font-black text-black mb-3">Top Rated</h3>
-              <p className="text-gray-700">4.8/5 average rating from vendor reviews</p>
+              <h3 className="text-xl font-black text-wisteria mb-3">Top Rated</h3>
+              <p className="text-gray-800">4.8/5 average rating from vendor reviews</p>
             </div>
           </div>
         </div>
