@@ -49,9 +49,9 @@ const Profile = () => {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error fetching profile:', error);
         toast({
           title: "Error",
@@ -68,7 +68,7 @@ const Profile = () => {
           location: data.location || '',
           role: data.role || 'vendor',
           phone: data.phone || '',
-          about: '' // Set to empty string since 'about' field doesn't exist in database yet
+          about: '' // Keep empty since this field doesn't exist in database yet
         });
       }
     } catch (error) {
@@ -83,7 +83,7 @@ const Profile = () => {
     
     setSaving(true);
     try {
-      // For now, we'll exclude the 'about' field since it doesn't exist in the database
+      // Exclude the 'about' field since it doesn't exist in the database
       const { about, ...profileDataWithoutAbout } = profileData;
       
       const { error } = await supabase
@@ -93,6 +93,8 @@ const Profile = () => {
           email: user.email,
           ...profileDataWithoutAbout,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
         });
 
       if (error) {
