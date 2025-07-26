@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MapPin, Star, Clock, Phone, Truck, Filter, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -56,14 +57,14 @@ const Map = () => {
   const mapStyle: React.CSSProperties = {
     width: '100%',
     height: '500px',
-    background: 'linear-gradient(135deg, #4C9DB0 0%, #59D35D 100%)',
+    background: 'linear-gradient(135deg, #c69fd5 0%, #fdfdc9 100%)',
     position: 'relative',
     borderRadius: '16px',
     overflow: 'hidden'
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
+    <div className="min-h-screen bg-gradient-to-br from-lemon to-wisteria">
       <Navbar />
       
       <div className="pt-24 pb-16 px-4">
@@ -81,7 +82,7 @@ const Map = () => {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Map Section */}
             <div className="lg:col-span-2">
-              <Card className="bg-white border-2 border-gray-200 mb-6">
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-white/20 shadow-xl mb-6">
                 <CardContent className="p-6">
                   {/* Search & Filters */}
                   <div className="flex gap-4 mb-4">
@@ -91,23 +92,23 @@ const Map = () => {
                         placeholder="Search location or supplier..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 font-semibold"
+                        className="pl-10 font-semibold border-2 border-gray-200"
                       />
                     </div>
                     <Button 
                       variant="outline" 
                       onClick={() => setFilterOpen(!filterOpen)}
-                      className="border-2 border-gray-300 font-bold"
+                      className="border-2 border-gray-300 font-bold hover:bg-wisteria/20"
                     >
                       <Filter className="h-4 w-4 mr-2" />
                       Filters
                     </Button>
                   </div>
 
-                  {/* Mock Map */}
-                  <div style={mapStyle} className="border-2 border-gray-200">
+                  {/* Mock Map with updated gradient */}
+                  <div style={mapStyle} className="border-2 border-white/30 shadow-inner">
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center text-white">
+                      <div className="text-center text-gray-800">
                         <MapPin className="h-16 w-16 mx-auto mb-4 opacity-80" />
                         <h3 className="text-2xl font-black mb-2">Interactive Map</h3>
                         <p className="text-lg opacity-90">Suppliers marked with pins</p>
@@ -126,7 +127,7 @@ const Map = () => {
                         }}
                         onClick={() => setSelectedSupplier(supplier)}
                       >
-                        <div className="bg-white rounded-full p-2 shadow-lg border-2 border-gray-300">
+                        <div className="bg-white rounded-full p-2 shadow-lg border-2 border-wisteria/30">
                           <MapPin className="h-6 w-6 text-[#59D35D]" />
                         </div>
                         <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded font-bold whitespace-nowrap">
@@ -157,7 +158,7 @@ const Map = () => {
 
             {/* Suppliers List */}
             <div className="lg:col-span-1">
-              <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-white/20 shadow-xl">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-black text-black mb-6">Nearby Suppliers</h2>
                   
@@ -165,10 +166,10 @@ const Map = () => {
                     {suppliers.map(supplier => (
                       <Card 
                         key={supplier.id} 
-                        className={`cursor-pointer transition-all duration-300 ${
+                        className={`cursor-pointer transition-all duration-300 border-2 ${
                           selectedSupplier?.id === supplier.id 
-                            ? 'ring-2 ring-[#59D35D] bg-green-50' 
-                            : 'hover:shadow-lg'
+                            ? 'ring-2 ring-[#59D35D] bg-green-50 border-green-200' 
+                            : 'hover:shadow-lg border-white/30 hover:border-wisteria/30'
                         }`}
                         onClick={() => setSelectedSupplier(supplier)}
                       >
@@ -213,7 +214,7 @@ const Map = () => {
                             <Button size="sm" className="bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold text-xs flex-1">
                               View Products
                             </Button>
-                            <Button size="sm" variant="outline" className="border-gray-300 text-xs">
+                            <Button size="sm" variant="outline" className="border-gray-300 text-xs hover:bg-wisteria/20">
                               <Phone className="h-3 w-3" />
                             </Button>
                           </div>
@@ -226,7 +227,7 @@ const Map = () => {
 
               {/* Selected Supplier Details */}
               {selectedSupplier && (
-                <Card className="bg-gradient-to-br from-[#59D35D] to-[#4BC44F] border-0 mt-6">
+                <Card className="bg-gradient-to-br from-wisteria to-lemon border-0 mt-6 shadow-xl">
                   <CardContent className="p-6">
                     <h3 className="text-xl font-black text-black mb-4">
                       {selectedSupplier.name}
@@ -257,7 +258,7 @@ const Map = () => {
                       <div className="text-sm font-bold text-black mb-2">Specialties:</div>
                       <div className="flex flex-wrap gap-1">
                         {selectedSupplier.specialties.map(specialty => (
-                          <Badge key={specialty} className="bg-white/20 text-black text-xs">
+                          <Badge key={specialty} className="bg-white/30 text-black text-xs border-white/20">
                             {specialty}
                           </Badge>
                         ))}
@@ -268,7 +269,7 @@ const Map = () => {
                       <Button className="flex-1 bg-black hover:bg-gray-800 text-white font-bold">
                         Call Now
                       </Button>
-                      <Button variant="outline" className="bg-white/20 border-white/30 text-black font-bold">
+                      <Button variant="outline" className="bg-white/30 border-white/40 text-black font-bold hover:bg-white/50">
                         Get Directions
                       </Button>
                     </div>

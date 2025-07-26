@@ -83,7 +83,7 @@ const BulkOrders = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
+    <div className="min-h-screen bg-gradient-to-br from-lemon to-wisteria">
       <Navbar />
       
       <div className="pt-24 pb-16 px-4">
@@ -100,28 +100,28 @@ const BulkOrders = () => {
 
           {/* Stats Cards */}
           <div className="grid md:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-white/20 shadow-xl">
               <CardContent className="p-6 text-center">
                 <Users className="h-8 w-8 text-[#59D35D] mx-auto mb-2" />
                 <div className="text-2xl font-black text-black">156</div>
                 <div className="text-sm font-semibold text-gray-600">Active Participants</div>
               </CardContent>
             </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-white/20 shadow-xl">
               <CardContent className="p-6 text-center">
                 <TrendingDown className="h-8 w-8 text-green-500 mx-auto mb-2" />
                 <div className="text-2xl font-black text-green-600">25%</div>
                 <div className="text-sm font-semibold text-gray-600">Average Savings</div>
               </CardContent>
             </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-white/20 shadow-xl">
               <CardContent className="p-6 text-center">
                 <ShoppingCart className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                 <div className="text-2xl font-black text-black">23</div>
                 <div className="text-sm font-semibold text-gray-600">Live Orders</div>
               </CardContent>
             </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-gray-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-white/20 shadow-xl">
               <CardContent className="p-6 text-center">
                 <Timer className="h-8 w-8 text-orange-500 mx-auto mb-2" />
                 <div className="text-2xl font-black text-black">2.3h</div>
@@ -131,7 +131,7 @@ const BulkOrders = () => {
           </div>
 
           {/* Category Filter */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-gray-200">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-white/20 shadow-xl">
             <div className="flex flex-wrap gap-2">
               {categories.map(category => (
                 <Button
@@ -140,7 +140,7 @@ const BulkOrders = () => {
                   onClick={() => setSelectedCategory(category)}
                   className={selectedCategory === category 
                     ? "bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold" 
-                    : "border-2 border-gray-300 font-bold hover:bg-gray-100"
+                    : "border-2 border-gray-300 font-bold hover:bg-wisteria/20"
                   }
                 >
                   {category}
@@ -154,7 +154,7 @@ const BulkOrders = () => {
             <h2 className="text-3xl font-black text-black mb-6">Live Bulk Orders</h2>
             
             {filteredOrders.map(order => (
-              <Card key={order.id} className="bg-white border-2 border-gray-200 hover:shadow-xl transition-all duration-300">
+              <Card key={order.id} className="bg-white/95 border-2 border-white/30 hover:shadow-2xl transition-all duration-300 backdrop-blur-sm">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -233,7 +233,7 @@ const BulkOrders = () => {
                     <Button 
                       variant="outline" 
                       size="lg"
-                      className="border-2 border-gray-300 font-bold px-6"
+                      className="border-2 border-gray-300 font-bold px-6 hover:bg-wisteria/20"
                     >
                       View Details
                     </Button>
@@ -245,7 +245,7 @@ const BulkOrders = () => {
 
           {/* Create Order CTA */}
           <div className="mt-12 text-center">
-            <Card className="bg-gradient-to-r from-[#59D35D] to-[#4BC44F] border-0">
+            <Card className="bg-gradient-to-r from-wisteria to-lemon border-0 shadow-2xl">
               <CardContent className="p-8">
                 <h3 className="text-3xl font-black text-black mb-4">
                   Can't Find What You Need?
