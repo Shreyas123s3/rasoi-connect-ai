@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,9 +38,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('user_id', userId)
         .single();
       
-      if (profile && profile.role) {
-        const role = profile.role as UserRole;
-        setUserRole(role);
+      if (profile?.role === 'vendor' || profile?.role === 'supplier') {
+        setUserRole(profile.role);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -59,8 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (session?.user) {
           // Try to get role from user metadata first, then from profiles table
           const metaRole = session.user.user_metadata?.role;
-          if (metaRole && (metaRole === 'vendor' || metaRole === 'supplier')) {
-            setUserRole(metaRole as UserRole);
+          if (metaRole === 'vendor' || metaRole === 'supplier') {
+            setUserRole(metaRole);
           } else {
             // Fetch from profiles table
             await fetchUserProfile(session.user.id);
@@ -80,8 +78,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (session?.user) {
         const metaRole = session.user.user_metadata?.role;
-        if (metaRole && (metaRole === 'vendor' || metaRole === 'supplier')) {
-          setUserRole(metaRole as UserRole);
+        if (metaRole === 'vendor' || metaRole === 'supplier') {
+          setUserRole(metaRole);
         } else {
           await fetchUserProfile(session.user.id);
         }
