@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import Navbar from '@/components/Navbar';
+import { callGeminiAPI } from '@/services/geminiService';
 
 const Chat = () => {
   const [messages, setMessages] = useState([
@@ -52,120 +53,48 @@ const Chat = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
     setInput('');
     setIsLoading(true);
 
     try {
-      // Mock API call - Replace with actual Gemini API implementation
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Sending query to Gemini API:', currentInput);
       
-      const botResponse = generateMockResponse(input);
+      // Call the real Gemini API
+      const botResponseText = await callGeminiAPI(currentInput, apiKey);
       
       const botMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: botResponse,
+        content: botResponseText,
         timestamp: new Date().toLocaleTimeString()
       };
 
+      console.log('Received response from Gemini API, adding to messages');
       setMessages(prev => [...prev, botMessage]);
+      
     } catch (error) {
-      const errorMessage = {
+      console.error('Error in handleSendMessage:', error);
+      
+      let errorMessage = 'Sorry, I encountered an error while processing your request.';
+      
+      if (error.message.includes('API key')) {
+        errorMessage = 'Please check your Gemini API key in settings. The current key may be invalid or expired.';
+      } else if (error.message.includes('fetch')) {
+        errorMessage = 'Unable to connect to Gemini AI. Please check your internet connection and try again.';
+      }
+      
+      const errorBotMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: 'Sorry, I encountered an error. Please check your API key settings and try again.',
+        content: errorMessage + '\n\nError details: ' + error.message,
         timestamp: new Date().toLocaleTimeString()
       };
-      setMessages(prev => [...prev, errorMessage]);
+      
+      setMessages(prev => [...prev, errorBotMessage]);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const generateMockResponse = (query) => {
-    const lowerQuery = query.toLowerCase();
-    
-    if (lowerQuery.includes('paneer') || lowerQuery.includes('cheese')) {
-      return `Based on current market data, here are the best paneer suppliers near you:
-
-🥛 **Fresh Dairy Co.** - ₹280/kg (2.1km away)
-• FSSAI verified, 4.8⭐ rating
-• Same-day delivery available
-• Join bulk order to save 12%
-
-🥛 **Mumbai Milk Center** - ₹290/kg (1.8km away)  
-• Organic certified, 4.7⭐ rating
-• Pickup available in 30 mins
-• Fresh batch arrives daily at 6 AM
-
-💡 **Tip**: Paneer prices typically drop by 8-10% after 6 PM. Consider evening purchases for better deals!
-
-Would you like me to connect you with any of these suppliers?`;
-    }
-    
-    if (lowerQuery.includes('onion') || lowerQuery.includes('alternative')) {
-      return `Great question! Here are excellent onion alternatives during price spikes:
-
-🧄 **Shallots** - ₹45/kg (vs onions at ₹65/kg)
-• Similar flavor profile, slightly sweeter
-• Available at Spice Garden Market
-
-🧄 **Leeks** - ₹40/kg 
-• Milder taste, works great in curries
-• Green Valley Suppliers has fresh stock
-
-🧄 **Garlic + Ginger paste** - ₹35/kg
-• Cost-effective flavor base
-• Multiple suppliers available nearby
-
-💰 **Cost Saving Tip**: Mix 60% shallots + 40% regular onions to save 25% without compromising taste!
-
-Current onion forecast: Prices expected to drop 15% in next 5 days. Consider waiting if possible.`;
-    }
-    
-    if (lowerQuery.includes('potato') || lowerQuery.includes('storage') || lowerQuery.includes('summer')) {
-      return `Here's the best way to store potatoes during Mumbai summers:
-
-🌡️ **Temperature Control**:
-• Keep between 10-15°C (use basement/coolest room)
-• Avoid direct sunlight and heat sources
-• Use mesh bags for air circulation
-
-💧 **Humidity Management**:
-• Store in dry, well-ventilated area
-• Avoid plastic bags (causes moisture buildup)
-• Check weekly and remove sprouted ones
-
-📦 **Storage Tips**:
-• Don't store with onions (both spoil faster)
-• Paper bags work better than plastic
-• Keep away from windows and cooking areas
-
-⚡ **Pro Tip**: Buy in smaller quantities during summer (15-20kg max) to reduce spoilage. Current potato prices are stable at ₹18/kg - good time to buy!
-
-Need help finding suppliers with proper cold storage facilities?`;
-    }
-    
-    return `I understand you're asking about "${query}". Here are some helpful insights:
-
-📊 **Current Market Overview**:
-• 25+ verified suppliers in your area
-• Average delivery time: 2-3 hours
-• Best prices typically between 6-8 PM
-
-🎯 **My Recommendations**:
-1. Check our supplier marketplace for competitive prices
-2. Join bulk orders to save 15-30%
-3. Set price alerts for your frequently used items
-4. Consider alternative products during price spikes
-
-💬 **How I can help you further**:
-• Find specific suppliers and compare prices
-• Suggest seasonal alternatives and substitutions  
-• Provide storage and procurement tips
-• Alert you about market trends and opportunities
-
-Feel free to ask more specific questions about suppliers, prices, or procurement strategies!`;
   };
 
   const handleQuickQuestion = (question) => {
@@ -232,7 +161,7 @@ Feel free to ask more specific questions about suppliers, prices, or procurement
                               className="font-mono text-sm border-2 border-wisteria/20 focus:border-wisteria/40"
                             />
                             <p className="text-xs text-gray-600 mt-1">
-                              Default key provided. You can update it for production use.
+                              Default key provided. Update with your own Gemini API key for production use.
                             </p>
                           </div>
                           <div>
@@ -367,19 +296,19 @@ Feel free to ask more specific questions about suppliers, prices, or procurement
                   <div className="space-y-3 text-black text-sm">
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                      <span className="font-semibold">Multilingual support</span>
+                      <span className="font-semibold">Real-time AI responses</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                      <span className="font-semibold">Real-time market data</span>
+                      <span className="font-semibold">Location-based queries</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                      <span className="font-semibold">Smart recommendations</span>
+                      <span className="font-semibold">Dynamic market insights</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                      <span className="font-semibold">Procurement insights</span>
+                      <span className="font-semibold">Procurement optimization</span>
                     </div>
                   </div>
                 </CardContent>
@@ -396,12 +325,12 @@ Feel free to ask more specific questions about suppliers, prices, or procurement
                     <span className="font-bold text-wisteria">{messages.filter(m => m.type === 'user').length}/50</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">Suppliers Found</span>
-                    <span className="font-bold text-wisteria">12</span>
+                    <span className="font-semibold text-gray-700">API Status</span>
+                    <span className="font-bold text-green-600">Connected</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">Savings Found</span>
-                    <span className="font-bold text-green-600">₹2,340</span>
+                    <span className="font-semibold text-gray-700">Response Mode</span>
+                    <span className="font-bold text-blue-600">Live AI</span>
                   </div>
                 </CardContent>
               </Card>
