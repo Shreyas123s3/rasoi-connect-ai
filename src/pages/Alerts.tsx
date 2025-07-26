@@ -9,43 +9,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Navbar from '@/components/Navbar';
+import { useSupabaseAlerts } from '@/hooks/useSupabaseAlerts';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Alerts = () => {
-  const [alerts, setAlerts] = useState([
-    {
-      id: 1,
-      product: 'Onions',
-      condition: 'below',
-      threshold: 35,
-      currentPrice: 42,
-      unit: 'kg',
-      status: 'active',
-      triggered: false,
-      createdAt: '2024-01-20'
-    },
-    {
-      id: 2,
-      product: 'Tomatoes',
-      condition: 'above',
-      threshold: 40,
-      currentPrice: 35,
-      unit: 'kg',
-      status: 'active',
-      triggered: false,
-      createdAt: '2024-01-18'
-    },
-    {
-      id: 3,
-      product: 'Cooking Oil',
-      condition: 'below',
-      threshold: 170,
-      currentPrice: 180,
-      unit: '15L',
-      status: 'triggered',
-      triggered: true,
-      createdAt: '2024-01-15'
-    }
-  ]);
+  const { alerts, loading, addAlert, deleteAlert } = useSupabaseAlerts();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const [recentNotifications, setRecentNotifications] = useState([
     {
@@ -78,31 +49,48 @@ const Alerts = () => {
     unit: 'kg'
   });
 
-  const addAlert = () => {
+  const handleAddAlert = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to create alerts.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (newAlert.product && newAlert.threshold) {
-      const alert = {
-        id: Date.now(),
-        product: newAlert.product,
-        condition: newAlert.condition,
-        threshold: parseFloat(newAlert.threshold),
-        currentPrice: Math.floor(Math.random() * 100) + 20, // Mock current price
-        unit: newAlert.unit,
-        status: 'active',
-        triggered: false,
-        createdAt: new Date().toISOString().split('T')[0]
-      };
+      const thresholdPrice = parseFloat(newAlert.threshold);
+      const currentPrice = Math.floor(Math.random() * 100) + 20; // Mock current price
       
-      setAlerts([...alerts, alert]);
-      setNewAlert({ product: '', condition: 'below', threshold: '', unit: 'kg' });
+      const result = await addAlert(newAlert.product, currentPrice, thresholdPrice);
+      
+      if (result) {
+        setNewAlert({ product: '', condition: 'below', threshold: '', unit: 'kg' });
+        toast({
+          title: "Alert Created!",
+          description: `Alert for ${newAlert.product} has been created successfully.`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to create alert. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const deleteAlert = (id: number) => {
-    setAlerts(alerts.filter(alert => alert.id !== id));
+  const handleDeleteAlert = async (alertId: string) => {
+    await deleteAlert(alertId);
+    toast({
+      title: "Alert Deleted",
+      description: "The alert has been removed successfully.",
+    });
   };
 
   const getAlertStatus = (alert: any) => {
-    if (alert.triggered) return { color: 'bg-red-100 text-red-800', text: 'Triggered' };
+    if (alert.status === 'triggered') return { color: 'bg-red-100 text-red-800', text: 'Triggered' };
     if (alert.status === 'active') return { color: 'bg-green-100 text-green-800', text: 'Active' };
     return { color: 'bg-gray-100 text-gray-800', text: 'Inactive' };
   };
@@ -115,6 +103,34 @@ const Alerts = () => {
       default: return <Bell className="h-4 w-4 text-gray-500" />;
     }
   };
+
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30">
+        <Navbar />
+        <div className="pt-24 pb-16 px-4">
+          <div className="container mx-auto text-center">
+            <Card className="max-w-md mx-auto bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
+              <CardContent className="p-8">
+                <AlertTriangle className="h-16 w-16 text-wisteria mx-auto mb-4" />
+                <h2 className="text-2xl font-black text-black mb-4">Authentication Required</h2>
+                <p className="text-gray-600 mb-6">
+                  Please sign in to view and manage your price alerts.
+                </p>
+                <Button 
+                  className="bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold"
+                  onClick={() => window.location.href = '/auth'}
+                >
+                  Sign In
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30">
@@ -198,7 +214,7 @@ const Alerts = () => {
                               </Select>
                             </div>
                           </div>
-                          <Button onClick={addAlert} className="w-full bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
+                          <Button onClick={handleAddAlert} className="w-full bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
                             Create Alert
                           </Button>
                         </div>
@@ -214,49 +230,63 @@ const Alerts = () => {
                   <CardTitle className="text-2xl font-black text-black">Your Alerts</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {alerts.map(alert => {
-                      const status = getAlertStatus(alert);
-                      return (
-                        <div key={alert.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-lemon/20 to-wisteria/10 rounded-lg border-2 border-wisteria/20">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-black text-lg text-black">{alert.product}</h3>
-                              <Badge className={status.color}>{status.text}</Badge>
-                            </div>
-                            <div className="text-sm text-gray-600 space-y-1">
-                              <div className="font-semibold">
-                                Alert when price {alert.condition} ₹{alert.threshold}/{alert.unit}
+                  {loading ? (
+                    <div className="text-center py-8">
+                      <p className="text-gray-600">Loading alerts...</p>
+                    </div>
+                  ) : alerts.length === 0 ? (
+                    <div className="text-center py-8">
+                      <AlertTriangle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600 mb-4">No alerts created yet</p>
+                      <p className="text-sm text-gray-500">Create your first alert to get notified about price changes</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {alerts.map(alert => {
+                        const status = getAlertStatus(alert);
+                        return (
+                          <div key={alert.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-lemon/20 to-wisteria/10 rounded-lg border-2 border-wisteria/20">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h3 className="font-black text-lg text-black">{alert.product_name}</h3>
+                                <Badge className={status.color}>{status.text}</Badge>
                               </div>
-                              <div>
-                                Current price: <span className="font-bold">₹{alert.currentPrice}/{alert.unit}</span>
+                              <div className="text-sm text-gray-600 space-y-1">
+                                <div className="font-semibold">
+                                  Alert when price falls below ₹{alert.price_threshold}
+                                </div>
+                                <div>
+                                  Current price: <span className="font-bold">₹{alert.current_price}</span>
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  Created: {new Date(alert.created_at).toLocaleDateString()}
+                                </div>
                               </div>
-                              <div className="text-xs text-gray-500">Created: {alert.createdAt}</div>
                             </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            {alert.triggered && (
-                              <Button size="sm" className="bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
-                                View Deals
+                            
+                            <div className="flex items-center gap-2">
+                              {alert.status === 'triggered' && (
+                                <Button size="sm" className="bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
+                                  View Deals
+                                </Button>
+                              )}
+                              <Button size="sm" variant="outline" className="border-2 border-wisteria/40 hover:bg-wisteria/10">
+                                <Edit className="h-4 w-4" />
                               </Button>
-                            )}
-                            <Button size="sm" variant="outline" className="border-2 border-wisteria/40 hover:bg-wisteria/10">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="border-2 border-red-300 text-red-600 hover:bg-red-50"
-                              onClick={() => deleteAlert(alert.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-2 border-red-300 text-red-600 hover:bg-red-50"
+                                onClick={() => handleDeleteAlert(alert.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

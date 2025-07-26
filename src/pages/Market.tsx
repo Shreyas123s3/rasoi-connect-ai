@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { TrendingUp, TrendingDown, Calendar, BarChart3, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import SupplierModal from '@/components/SupplierModal';
 import ConfettiAlert from '@/components/ConfettiAlert';
-import { useAlerts } from '@/hooks/useAlerts';
+import { useSupabaseAlerts } from '@/hooks/useSupabaseAlerts';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Market = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('today');
@@ -15,7 +17,10 @@ const Market = () => {
   const [selectedProduct, setSelectedProduct] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
   const [confettiProduct, setConfettiProduct] = useState('');
-  const { addAlert } = useAlerts();
+  
+  const { user } = useAuth();
+  const { addAlert } = useSupabaseAlerts();
+  const { toast } = useToast();
 
   const categories = ['All', 'Vegetables', 'Spices', 'Grains', 'Oils', 'Dairy', 'Fruits', 'Pulses'];
   const periods = [
@@ -228,11 +233,31 @@ const Market = () => {
     setSupplierModalOpen(true);
   };
 
-  const handleSetAlert = (productName: string, currentPrice: number) => {
-    setConfettiProduct(productName);
-    setShowConfetti(true);
-    addAlert(productName, currentPrice);
-    console.log(`Alert set for: ${productName} at price: ₹${currentPrice}`);
+  const handleSetAlert = async (productName: string, currentPrice: number) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to set price alerts.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log(`Setting alert for: ${productName} at price: ₹${currentPrice}`);
+    
+    const result = await addAlert(productName, currentPrice);
+    
+    if (result) {
+      setConfettiProduct(productName);
+      setShowConfetti(true);
+      console.log(`Alert successfully created for: ${productName}`);
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to create alert. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleConfettiComplete = () => {
