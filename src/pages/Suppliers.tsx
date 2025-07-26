@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Star, Shield, Clock, MapPin, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -105,38 +104,38 @@ const Suppliers = () => {
     });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
+    <div className="min-h-screen bg-gradient-to-br from-lemon to-[#FDFDCR]">
       <Navbar />
       
       <div className="pt-24 pb-16 px-4">
         <div className="container mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-black text-black mb-4">
+          {/* Header - Enhanced with Wisteria accents */}
+          <div className="text-center mb-12 bg-wisteria/10 backdrop-blur-sm rounded-3xl py-12 px-6 border-2 border-wisteria/20">
+            <h1 className="text-5xl font-black text-wisteria mb-4">
               TRUSTED <span className="text-[#59D35D]">SUPPLIERS</span>
             </h1>
-            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-700 max-w-2xl mx-auto font-semibold">
               Discover verified suppliers with the best prices and fastest delivery in your area
             </p>
           </div>
 
-          {/* Search and Filters */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-gray-200">
+          {/* Search and Filters - Enhanced with Lemon background */}
+          <div className="bg-lemon backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-wisteria/30 shadow-lg">
             <div className="grid md:grid-cols-4 gap-4 mb-4">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-5 w-5 text-wisteria" />
                 <Input
                   placeholder="Search suppliers or products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 font-semibold"
+                  className="pl-10 font-semibold border-2 border-wisteria/20 focus:border-wisteria"
                 />
               </div>
               
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 rounded-lg border-2 border-gray-200 font-semibold bg-white"
+                className="px-4 py-2 rounded-lg border-2 border-wisteria/20 font-semibold bg-white focus:border-wisteria"
               >
                 {categories.map(category => (
                   <option key={category} value={category}>{category}</option>
@@ -146,23 +145,23 @@ const Suppliers = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 rounded-lg border-2 border-gray-200 font-semibold bg-white"
+                className="px-4 py-2 rounded-lg border-2 border-wisteria/20 font-semibold bg-white focus:border-wisteria"
               >
                 <option value="rating">Sort by Rating</option>
                 <option value="distance">Sort by Distance</option>
                 <option value="trustScore">Sort by Trust Score</option>
               </select>
               
-              <Button className="bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
+              <Button className="bg-wisteria hover:bg-wisteria/90 text-white font-bold border-2 border-wisteria">
                 <Filter className="h-4 w-4 mr-2" />
                 Advanced Filters
               </Button>
             </div>
           </div>
 
-          {/* Results Count */}
-          <div className="mb-6">
-            <p className="text-lg font-bold text-gray-700">
+          {/* Results Count - Enhanced with Wisteria styling */}
+          <div className="mb-6 bg-wisteria/5 rounded-xl p-4 border border-wisteria/20">
+            <p className="text-lg font-black text-wisteria">
               Showing {filteredSuppliers.length} verified suppliers
             </p>
           </div>
@@ -170,8 +169,8 @@ const Suppliers = () => {
           {/* Suppliers Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSuppliers.map(supplier => (
-              <Card key={supplier.id} className="bg-white border-2 border-gray-200 hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden">
-                <CardHeader className="pb-3">
+              <Card key={supplier.id} className="bg-white border-2 border-wisteria/20 hover:shadow-xl hover:scale-105 hover:border-wisteria transition-all duration-300 overflow-hidden">
+                <CardHeader className="pb-3 bg-lemon/30">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <CardTitle className="text-xl font-black text-black mb-2">
@@ -188,11 +187,11 @@ const Suppliers = () => {
                         )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-black text-[#59D35D]">
+                    <div className="text-right bg-wisteria/10 rounded-lg p-2">
+                      <div className="text-2xl font-black text-wisteria">
                         {supplier.trustScore}%
                       </div>
-                      <div className="text-xs text-gray-500 font-semibold">Trust Score</div>
+                      <div className="text-xs text-wisteria font-semibold">Trust Score</div>
                     </div>
                   </div>
 
@@ -207,10 +206,10 @@ const Suppliers = () => {
 
                   {/* Specialties */}
                   <div className="mb-3">
-                    <div className="text-sm font-bold text-gray-700 mb-1">Specialties:</div>
+                    <div className="text-sm font-bold text-wisteria mb-1">Specialties:</div>
                     <div className="flex flex-wrap gap-1">
                       {supplier.specialties.map(specialty => (
-                        <Badge key={specialty} variant="outline" className="text-xs">
+                        <Badge key={specialty} variant="outline" className="text-xs border-wisteria/30 text-wisteria">
                           {specialty}
                         </Badge>
                       ))}
@@ -222,15 +221,15 @@ const Suppliers = () => {
                   {/* Info Grid */}
                   <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                     <div className="flex items-center">
-                      <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                      <MapPin className="h-4 w-4 text-wisteria mr-2" />
                       <span className="font-semibold">{supplier.distance}</span>
                     </div>
                     <div className="flex items-center">
-                      <Clock className="h-4 w-4 text-gray-500 mr-2" />
+                      <Clock className="h-4 w-4 text-wisteria mr-2" />
                       <span className="font-semibold">{supplier.deliveryTime}</span>
                     </div>
                     <div className="flex items-center">
-                      <Truck className="h-4 w-4 text-gray-500 mr-2" />
+                      <Truck className="h-4 w-4 text-wisteria mr-2" />
                       <span className="font-semibold">Min: {supplier.minOrder}</span>
                     </div>
                     <div className="flex items-center">
@@ -244,7 +243,7 @@ const Suppliers = () => {
                     <Button className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
                       View Products
                     </Button>
-                    <Button variant="outline" className="border-2 border-gray-300 font-bold">
+                    <Button variant="outline" className="border-2 border-wisteria/30 font-bold text-wisteria hover:bg-wisteria hover:text-white">
                       Contact
                     </Button>
                   </div>
@@ -253,9 +252,9 @@ const Suppliers = () => {
             ))}
           </div>
 
-          {/* Load More */}
-          <div className="text-center mt-12">
-            <Button size="lg" className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4">
+          {/* Load More - Enhanced with Wisteria styling */}
+          <div className="text-center mt-12 bg-lemon/30 rounded-2xl py-8 border-2 border-wisteria/20">
+            <Button size="lg" className="bg-wisteria hover:bg-wisteria/90 text-white font-bold px-8 py-4 shadow-lg">
               Load More Suppliers
             </Button>
           </div>
