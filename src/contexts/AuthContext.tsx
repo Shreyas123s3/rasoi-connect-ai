@@ -43,9 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       
-      // Data from RPC is simpler and avoids type inference issues
-      if (data === 'vendor' || data === 'supplier') {
-        setUserRole(data);
+      // Type guard to ensure the data is a valid UserRole
+      if (data && (data === 'vendor' || data === 'supplier')) {
+        setUserRole(data as UserRole);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
