@@ -1,13 +1,8 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 type UserRole = 'vendor' | 'supplier';
-
-interface ProfileData {
-  role: string | null;
-}
 
 interface AuthContextType {
   user: User | null;
@@ -37,17 +32,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data: profile } = await supabase
+      // Use explicit typing to avoid type inference issues
+      const { data } = await supabase
         .from('profiles')
         .select('role')
         .eq('user_id', userId)
         .single();
       
-      const profileData = profile as ProfileData | null;
-      const roleValue = profileData?.role;
-      
-      if (roleValue === 'vendor' || roleValue === 'supplier') {
-        setUserRole(roleValue);
+      // Simple type check without complex inference
+      if (data && typeof data === 'object' && 'role' in data) {
+        const role = data.role;
+        if (role === 'vendor' || role === 'supplier') {
+          setUserRole(role as UserRole);
+        }
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
