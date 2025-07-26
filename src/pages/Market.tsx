@@ -3,7 +3,6 @@ import { TrendingUp, TrendingDown, Calendar, BarChart3, AlertTriangle } from 'lu
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import Navbar from '@/components/Navbar';
 import SupplierModal from '@/components/SupplierModal';
 import ConfettiAlert from '@/components/ConfettiAlert';
 import { useSupabaseAlerts } from '@/hooks/useSupabaseAlerts';
@@ -286,8 +285,6 @@ const Market = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30">
-      <Navbar />
-      
       <div className="pt-24 pb-16 px-4">
         <div className="container mx-auto">
           {/* Header */}
@@ -469,7 +466,10 @@ const Market = () => {
                   <p className="text-green-100 mb-4">
                     Onion prices are expected to drop 15% in the next 3 days. Consider bulk purchasing.
                   </p>
-                  <Button className="bg-white text-green-600 hover:bg-gray-100 font-bold">
+                  <Button 
+                    className="bg-white text-green-600 hover:bg-gray-100 font-bold"
+                    onClick={() => window.open('https://agmarknet.gov.in/', '_blank')}
+                  >
                     View Recommendations
                   </Button>
                 </CardContent>

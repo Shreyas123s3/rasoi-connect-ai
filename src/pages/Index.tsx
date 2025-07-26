@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Store, Users, Bot, TrendingUp, MapPin, Bell, Star, Shield, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import Navbar from '@/components/Navbar';
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -45,8 +44,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
-      <Navbar />
-      
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4">
         <div className="container mx-auto text-center">
