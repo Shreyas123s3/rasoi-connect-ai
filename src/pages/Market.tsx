@@ -5,12 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
+import SupplierModal from '@/components/SupplierModal';
+import ConfettiAlert from '@/components/ConfettiAlert';
+import { useAlerts } from '@/hooks/useAlerts';
 
 const Market = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('today');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [supplierModalOpen, setSupplierModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiProduct, setConfettiProduct] = useState('');
+  const { addAlert } = useAlerts();
 
-  const categories = ['All', 'Vegetables', 'Spices', 'Grains', 'Oils', 'Dairy'];
+  const categories = ['All', 'Vegetables', 'Spices', 'Grains', 'Oils', 'Dairy', 'Fruits', 'Pulses'];
   const periods = [
     { value: 'today', label: 'Today' },
     { value: '7days', label: '7 Days' },
@@ -89,12 +97,149 @@ const Market = () => {
       volatility: 'low',
       forecast: 'stable',
       suppliers: 14
+    },
+    {
+      name: 'Potatoes',
+      category: 'Vegetables',
+      currentPrice: 28,
+      previousPrice: 25,
+      change: 12.0,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'high',
+      forecast: 'rising',
+      suppliers: 18
+    },
+    {
+      name: 'Apples',
+      category: 'Fruits',
+      currentPrice: 150,
+      previousPrice: 145,
+      change: 3.4,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 9
+    },
+    {
+      name: 'Chili Powder',
+      category: 'Spices',
+      currentPrice: 380,
+      previousPrice: 395,
+      change: -3.8,
+      unit: 'kg',
+      trend: 'down',
+      volatility: 'medium',
+      forecast: 'falling',
+      suppliers: 11
+    },
+    {
+      name: 'Toor Dal',
+      category: 'Pulses',
+      currentPrice: 125,
+      previousPrice: 130,
+      change: -3.8,
+      unit: 'kg',
+      trend: 'down',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 7
+    },
+    {
+      name: 'Milk',
+      category: 'Dairy',
+      currentPrice: 55,
+      previousPrice: 52,
+      change: 5.8,
+      unit: '1L',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'rising',
+      suppliers: 13
+    },
+    {
+      name: 'Bananas',
+      category: 'Fruits',
+      currentPrice: 45,
+      previousPrice: 48,
+      change: -6.3,
+      unit: 'dozen',
+      trend: 'down',
+      volatility: 'medium',
+      forecast: 'stable',
+      suppliers: 16
+    },
+    {
+      name: 'Coriander Seeds',
+      category: 'Spices',
+      currentPrice: 320,
+      previousPrice: 310,
+      change: 3.2,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 8
+    },
+    {
+      name: 'Mustard Oil',
+      category: 'Oils',
+      currentPrice: 165,
+      previousPrice: 170,
+      change: -2.9,
+      unit: '1L',
+      trend: 'down',
+      volatility: 'low',
+      forecast: 'falling',
+      suppliers: 5
+    },
+    {
+      name: 'Moong Dal',
+      category: 'Pulses',
+      currentPrice: 110,
+      previousPrice: 105,
+      change: 4.8,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'medium',
+      forecast: 'rising',
+      suppliers: 9
+    },
+    {
+      name: 'Paneer',
+      category: 'Dairy',
+      currentPrice: 280,
+      previousPrice: 275,
+      change: 1.8,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 6
     }
   ];
 
   const filteredData = marketData.filter(item => 
     selectedCategory === 'All' || item.category === selectedCategory
   );
+
+  const handleFindSuppliers = (productName: string) => {
+    setSelectedProduct(productName);
+    setSupplierModalOpen(true);
+  };
+
+  const handleSetAlert = (productName: string) => {
+    setConfettiProduct(productName);
+    setShowConfetti(true);
+    addAlert(productName);
+    console.log(`Alert set for: ${productName}`);
+  };
+
+  const handleConfettiComplete = () => {
+    setShowConfetti(false);
+    setConfettiProduct('');
+  };
 
   const getTrendColor = (trend: string, change: number) => {
     if (trend === 'up') return change > 5 ? 'text-red-600' : 'text-green-600';
@@ -204,7 +349,7 @@ const Market = () => {
             <Card className="bg-gradient-to-br from-wisteria/30 to-white backdrop-blur-sm border-2 border-wisteria/20">
               <CardContent className="p-6 text-center">
                 <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                <div className="text-2xl font-black text-blue-600">45</div>
+                <div className="text-2xl font-black text-blue-600">16</div>
                 <div className="text-sm font-semibold text-gray-600">Total Items Tracked</div>
               </CardContent>
             </Card>
@@ -271,10 +416,17 @@ const Market = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <Button className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
+                    <Button 
+                      className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold"
+                      onClick={() => handleFindSuppliers(item.name)}
+                    >
                       Find Suppliers
                     </Button>
-                    <Button variant="outline" className="border-2 border-wisteria/50 font-bold hover:bg-wisteria/10">
+                    <Button 
+                      variant="outline" 
+                      className="border-2 border-wisteria/50 font-bold hover:bg-wisteria/10"
+                      onClick={() => handleSetAlert(item.name)}
+                    >
                       Set Alert
                     </Button>
                   </div>
@@ -314,6 +466,20 @@ const Market = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals and Effects */}
+      <SupplierModal 
+        isOpen={supplierModalOpen}
+        onClose={() => setSupplierModalOpen(false)}
+        productName={selectedProduct}
+      />
+      
+      {showConfetti && (
+        <ConfettiAlert 
+          productName={confettiProduct}
+          onComplete={handleConfettiComplete}
+        />
+      )}
     </div>
   );
 };
