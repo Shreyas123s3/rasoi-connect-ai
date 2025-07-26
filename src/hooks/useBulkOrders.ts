@@ -87,17 +87,28 @@ export const useBulkOrders = () => {
         return false;
       }
 
-      // Update current participants count using a proper RPC call or direct update
-      const { error: updateError } = await supabase
+      // Get the current order to increment the participant count
+      const { data: currentOrder, error: fetchError } = await supabase
         .from('bulk_orders')
-        .update({ 
-          current_participants: supabase.sql`current_participants + 1`,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', bulkOrderId);
+        .select('current_participants')
+        .eq('id', bulkOrderId)
+        .single();
 
-      if (updateError) {
-        console.error('Error updating participant count:', updateError);
+      if (fetchError) {
+        console.error('Error fetching current order:', fetchError);
+      } else {
+        // Update current participants count
+        const { error: updateError } = await supabase
+          .from('bulk_orders')
+          .update({ 
+            current_participants: (currentOrder.current_participants || 0) + 1,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', bulkOrderId);
+
+        if (updateError) {
+          console.error('Error updating participant count:', updateError);
+        }
       }
 
       // Refresh bulk orders
