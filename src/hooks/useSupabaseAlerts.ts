@@ -39,7 +39,15 @@ export const useSupabaseAlerts = () => {
         return;
       }
 
-      setAlerts(data || []);
+      // Type cast the data to ensure proper typing
+      const typedAlerts = (data || []).map(alert => ({
+        ...alert,
+        status: alert.status as 'active' | 'triggered' | 'inactive',
+        created_at: alert.created_at || new Date().toISOString(),
+        updated_at: alert.updated_at || new Date().toISOString()
+      }));
+
+      setAlerts(typedAlerts);
     } catch (error) {
       console.error('Error fetching alerts:', error);
     } finally {
@@ -74,9 +82,17 @@ export const useSupabaseAlerts = () => {
         return null;
       }
 
+      // Type cast the returned data
+      const typedAlert: SupabaseAlert = {
+        ...data,
+        status: data.status as 'active' | 'triggered' | 'inactive',
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
+      };
+
       // Update local state
-      setAlerts(prevAlerts => [data, ...prevAlerts]);
-      return data;
+      setAlerts(prevAlerts => [typedAlert, ...prevAlerts]);
+      return typedAlert;
     } catch (error) {
       console.error('Error adding alert:', error);
       return null;
@@ -124,10 +140,18 @@ export const useSupabaseAlerts = () => {
         return;
       }
 
+      // Type cast the returned data
+      const typedAlert: SupabaseAlert = {
+        ...data,
+        status: data.status as 'active' | 'triggered' | 'inactive',
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
+      };
+
       // Update local state
       setAlerts(prevAlerts => 
         prevAlerts.map(alert => 
-          alert.id === alertId ? { ...alert, ...data } : alert
+          alert.id === alertId ? typedAlert : alert
         )
       );
     } catch (error) {

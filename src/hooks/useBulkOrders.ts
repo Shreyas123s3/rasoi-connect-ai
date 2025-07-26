@@ -46,7 +46,19 @@ export const useBulkOrders = () => {
         return;
       }
 
-      setBulkOrders(data || []);
+      // Type cast the data to ensure proper typing
+      const typedBulkOrders = (data || []).map(order => ({
+        ...order,
+        status: order.status as 'active' | 'completed' | 'cancelled',
+        created_at: order.created_at || new Date().toISOString(),
+        updated_at: order.updated_at || new Date().toISOString(),
+        expires_at: order.expires_at || new Date().toISOString(),
+        description: order.description || '',
+        supplier_id: order.supplier_id || undefined,
+        current_participants: order.current_participants || 0
+      }));
+
+      setBulkOrders(typedBulkOrders);
     } catch (err) {
       console.error('Error fetching bulk orders:', err);
       setError('Failed to fetch bulk orders');
@@ -75,10 +87,14 @@ export const useBulkOrders = () => {
         return false;
       }
 
-      // Update current participants count
-      const { error: updateError } = await supabase.rpc('increment_bulk_order_participants', {
-        bulk_order_id: bulkOrderId
-      });
+      // Update current participants count using a proper RPC call or direct update
+      const { error: updateError } = await supabase
+        .from('bulk_orders')
+        .update({ 
+          current_participants: supabase.sql`current_participants + 1`,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', bulkOrderId);
 
       if (updateError) {
         console.error('Error updating participant count:', updateError);
