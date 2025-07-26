@@ -1,8 +1,13 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 type UserRole = 'vendor' | 'supplier';
+
+interface ProfileData {
+  role: string | null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -38,8 +43,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('user_id', userId)
         .single();
       
-      if (profile?.role === 'vendor' || profile?.role === 'supplier') {
-        setUserRole(profile.role);
+      const profileData = profile as ProfileData | null;
+      const roleValue = profileData?.role;
+      
+      if (roleValue === 'vendor' || roleValue === 'supplier') {
+        setUserRole(roleValue);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
