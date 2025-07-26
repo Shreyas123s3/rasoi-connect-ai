@@ -31,12 +31,13 @@ const Navbar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Don't render navbar on auth page
   if (location.pathname === '/auth') {
     return null;
   }
 
   return (
-    <nav className="bg-white/90 backdrop-blur-sm border-b-2 border-wisteria/30 sticky top-0 z-50 w-full">
+    <nav className="bg-white/90 backdrop-blur-sm border-b-2 border-wisteria/30 fixed top-0 left-0 right-0 z-50 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
