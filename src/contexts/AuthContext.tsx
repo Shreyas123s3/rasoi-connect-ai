@@ -29,19 +29,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userRole, setUserRole] = useState<'vendor' | 'supplier' | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+      
+      if (profile) {
+        setUserRole(profile.role as 'vendor' | 'supplier');
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Extract role from user metadata
-          const role = session.user.user_metadata?.role as 'vendor' | 'supplier';
-          setUserRole(role || null);
-          console.log('User role:', role);
+          // Try to get role from user metadata first, then from profiles table
+          const metaRole = session.user.user_metadata?.role as 'vendor' | 'supplier';
+          if (metaRole) {
+            setUserRole(metaRole);
+          } else {
+            // Fetch from profiles table
+            await fetchUserProfile(session.user.id);
+          }
         } else {
           setUserRole(null);
         }
@@ -51,13 +71,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        const role = session.user.user_metadata?.role as 'vendor' | 'supplier';
-        setUserRole(role || null);
+        const metaRole = session.user.user_metadata?.role as 'vendor' | 'supplier';
+        if (metaRole) {
+          setUserRole(metaRole);
+        } else {
+          await fetchUserProfile(session.user.id);
+        }
       }
       
       setLoading(false);

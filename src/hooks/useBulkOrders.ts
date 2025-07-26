@@ -74,6 +74,7 @@ export const useBulkOrders = () => {
     }
 
     try {
+      // First, add the user to bulk_order_participants
       const { error: insertError } = await supabase
         .from('bulk_order_participants')
         .insert([{
@@ -87,17 +88,25 @@ export const useBulkOrders = () => {
         return false;
       }
 
-      // Update current participants count using a proper RPC call or direct update
-      const { error: updateError } = await supabase
+      // Then, get the current participants count and increment it
+      const { data: currentOrder } = await supabase
         .from('bulk_orders')
-        .update({ 
-          current_participants: supabase.sql`current_participants + 1`,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', bulkOrderId);
+        .select('current_participants')
+        .eq('id', bulkOrderId)
+        .single();
 
-      if (updateError) {
-        console.error('Error updating participant count:', updateError);
+      if (currentOrder) {
+        const { error: updateError } = await supabase
+          .from('bulk_orders')
+          .update({ 
+            current_participants: currentOrder.current_participants + 1,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', bulkOrderId);
+
+        if (updateError) {
+          console.error('Error updating participant count:', updateError);
+        }
       }
 
       // Refresh bulk orders
