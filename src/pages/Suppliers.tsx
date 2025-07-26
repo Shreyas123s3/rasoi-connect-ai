@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Star, Phone, MapPin, Award, Users, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,26 +9,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Navbar from '@/components/Navbar';
 import SupplierModal from '@/components/SupplierModal';
 import AuthGuard from '@/components/AuthGuard';
-import { useSuppliers } from '@/hooks/useSuppliers';
+import { useSuppliers, Supplier } from '@/hooks/useSuppliers';
 
 const Suppliers = () => {
   const { suppliers, loading, error } = useSuppliers();
-  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState('All');
   const [specialtyFilter, setSpecialtyFilter] = useState('All');
 
   const filteredSuppliers = suppliers.filter(supplier => {
     const matchesSearch = supplier.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         supplier.specialties.some(specialty => specialty.toLowerCase().includes(searchTerm.toLowerCase()));
+                         (supplier.specialties && supplier.specialties.some(specialty => specialty.toLowerCase().includes(searchTerm.toLowerCase())));
     const matchesLocation = locationFilter === 'All' || supplier.location === locationFilter;
-    const matchesSpecialty = specialtyFilter === 'All' || supplier.specialties.includes(specialtyFilter);
+    const matchesSpecialty = specialtyFilter === 'All' || (supplier.specialties && supplier.specialties.includes(specialtyFilter));
     
     return matchesSearch && matchesLocation && matchesSpecialty;
   });
 
   const locations = ['All', ...Array.from(new Set(suppliers.map(s => s.location)))];
-  const specialties = ['All', ...Array.from(new Set(suppliers.flatMap(s => s.specialties)))];
+  const specialties = ['All', ...Array.from(new Set(suppliers.flatMap(s => s.specialties || [])))];
 
   return (
     <AuthGuard>
@@ -116,20 +117,20 @@ const Suppliers = () => {
                           <div className="text-right">
                             <div className="flex items-center gap-1 mb-1">
                               <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                              <span className="text-lg font-black">{supplier.rating}</span>
+                              <span className="text-lg font-black">{supplier.rating || 0}</span>
                             </div>
-                            <div className="text-xs text-gray-500 font-semibold">{supplier.total_orders} orders</div>
+                            <div className="text-xs text-gray-500 font-semibold">{supplier.total_orders || 0} orders</div>
                           </div>
                         </div>
                       </CardHeader>
                       <CardContent>
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {supplier.specialties.slice(0, 3).map(specialty => (
+                          {supplier.specialties && supplier.specialties.slice(0, 3).map(specialty => (
                             <Badge key={specialty} variant="secondary" className="bg-lemon/30 text-gray-800 font-semibold">
                               {specialty}
                             </Badge>
                           ))}
-                          {supplier.specialties.length > 3 && (
+                          {supplier.specialties && supplier.specialties.length > 3 && (
                             <Badge variant="secondary" className="bg-gray-200 text-gray-600 font-semibold">
                               +{supplier.specialties.length - 3} more
                             </Badge>
@@ -170,8 +171,9 @@ const Suppliers = () => {
 
         {selectedSupplier && (
           <SupplierModal
-            supplier={selectedSupplier}
+            isOpen={!!selectedSupplier}
             onClose={() => setSelectedSupplier(null)}
+            supplier={selectedSupplier}
           />
         )}
       </div>

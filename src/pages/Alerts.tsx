@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/Navbar';
 import AuthGuard from '@/components/AuthGuard';
-import { useAlerts } from '@/hooks/useAlerts';
+import { useSupabaseAlerts } from '@/hooks/useSupabaseAlerts';
 
 const Alerts = () => {
-  const { alerts, loading, error } = useAlerts();
+  const { alerts, loading, addAlert } = useSupabaseAlerts();
 
   return (
     <AuthGuard>
