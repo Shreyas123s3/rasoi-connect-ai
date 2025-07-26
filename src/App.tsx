@@ -6,39 +6,44 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import Market from "./pages/Market";
 import Suppliers from "./pages/Suppliers";
 import BulkOrders from "./pages/BulkOrders";
-import Market from "./pages/Market";
 import Alerts from "./pages/Alerts";
-import Map from "./pages/Map";
 import Chat from "./pages/Chat";
-import Auth from "./pages/Auth";
+import Map from "./pages/Map";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Navbar from "./components/Navbar";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/suppliers" element={<Suppliers />} />
-            <Route path="/bulk-orders" element={<BulkOrders />} />
-            <Route path="/market" element={<Market />} />
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/map" element={<Map />} />
-            <Route path="/chat" element={<Chat />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="min-h-screen">
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/market" element={<Market />} />
+              <Route path="/suppliers" element={<Suppliers />} />
+              <Route path="/bulk-orders" element={<BulkOrders />} />
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/map" element={<Map />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

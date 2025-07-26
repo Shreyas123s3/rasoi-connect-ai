@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Safely convert the string response to UserRole
       const roleString = data as string;
       if (roleString === 'vendor' || roleString === 'supplier') {
-        setUserRole(roleString);
+        setUserRole(roleString as UserRole);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
