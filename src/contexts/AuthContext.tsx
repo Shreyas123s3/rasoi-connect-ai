@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -32,19 +33,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      // Use explicit typing to avoid type inference issues
-      const { data } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('user_id', userId)
-        .single();
+      // Use rpc or raw SQL to avoid complex type inference
+      const { data, error } = await supabase.rpc('get_user_role', { 
+        user_id: userId 
+      });
       
-      // Simple type check without complex inference
-      if (data && typeof data === 'object' && 'role' in data) {
-        const role = data.role;
-        if (role === 'vendor' || role === 'supplier') {
-          setUserRole(role as UserRole);
-        }
+      if (error) {
+        console.error('Error fetching user role:', error);
+        return;
+      }
+      
+      // Data from RPC is simpler and avoids type inference issues
+      if (data === 'vendor' || data === 'supplier') {
+        setUserRole(data);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
