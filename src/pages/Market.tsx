@@ -1,282 +1,510 @@
-
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, Calendar, MapPin, Filter, Search } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, BarChart3, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
-import AuthGuard from '@/components/AuthGuard';
-import { useAlerts } from '@/hooks/useAlerts';
+import SupplierModal from '@/components/SupplierModal';
 import ConfettiAlert from '@/components/ConfettiAlert';
+import { useSupabaseAlerts } from '@/hooks/useSupabaseAlerts';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Market = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All');
-  const [locationFilter, setLocationFilter] = useState('All');
-  const [showConfetti, setShowConfetti] = useState<string | null>(null);
-  const { addAlert } = useAlerts();
+  const [selectedPeriod, setSelectedPeriod] = useState('today');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [supplierModalOpen, setSupplierModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiProduct, setConfettiProduct] = useState('');
+  
+  const { user } = useAuth();
+  const { addAlert } = useSupabaseAlerts();
+  const { toast } = useToast();
 
-  // Mock data for products - restored to show many products
-  const products = [
+  const categories = ['All', 'Vegetables', 'Spices', 'Grains', 'Oils', 'Dairy', 'Fruits', 'Pulses'];
+  const periods = [
+    { value: 'today', label: 'Today' },
+    { value: '7days', label: '7 Days' },
+    { value: '30days', label: '30 Days' }
+  ];
+
+  const marketData = [
     {
-      id: '1',
-      name: 'Basmati Rice',
-      category: 'Grains',
-      current_price: 85,
-      price_change: 5.2,
-      high_24h: 88,
-      low_24h: 82,
-      location: 'Delhi Wholesale Market'
-    },
-    {
-      id: '2',
       name: 'Onions',
       category: 'Vegetables',
-      current_price: 45,
-      price_change: -2.1,
-      high_24h: 48,
-      low_24h: 43,
-      location: 'Mumbai Market'
+      currentPrice: 42,
+      previousPrice: 48,
+      change: -12.5,
+      unit: 'kg',
+      trend: 'down',
+      volatility: 'high',
+      forecast: 'stable',
+      suppliers: 15
     },
     {
-      id: '3',
       name: 'Tomatoes',
       category: 'Vegetables',
-      current_price: 35,
-      price_change: 8.5,
-      high_24h: 38,
-      low_24h: 32,
-      location: 'Bangalore Market'
+      currentPrice: 35,
+      previousPrice: 32,
+      change: 9.4,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'medium',
+      forecast: 'rising',
+      suppliers: 12
     },
     {
-      id: '4',
-      name: 'Wheat',
+      name: 'Rice (Basmati)',
       category: 'Grains',
-      current_price: 28,
-      price_change: 1.2,
-      high_24h: 29,
-      low_24h: 27,
-      location: 'Delhi Wholesale Market'
+      currentPrice: 85,
+      previousPrice: 82,
+      change: 3.7,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 8
     },
     {
-      id: '5',
-      name: 'Mustard Oil',
-      category: 'Oil',
-      current_price: 120,
-      price_change: -1.5,
-      high_24h: 125,
-      low_24h: 118,
-      location: 'Kolkata Market'
+      name: 'Cooking Oil',
+      category: 'Oils',
+      currentPrice: 180,
+      previousPrice: 185,
+      change: -2.7,
+      unit: '15L',
+      trend: 'down',
+      volatility: 'low',
+      forecast: 'falling',
+      suppliers: 6
     },
     {
-      id: '6',
-      name: 'Turmeric',
+      name: 'Turmeric Powder',
       category: 'Spices',
-      current_price: 180,
-      price_change: 3.8,
-      high_24h: 185,
-      low_24h: 175,
-      location: 'Chennai Market'
+      currentPrice: 420,
+      previousPrice: 410,
+      change: 2.4,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'medium',
+      forecast: 'stable',
+      suppliers: 10
     },
     {
-      id: '7',
-      name: 'Green Chilies',
-      category: 'Vegetables',
-      current_price: 60,
-      price_change: 12.5,
-      high_24h: 65,
-      low_24h: 55,
-      location: 'Hyderabad Market'
+      name: 'Wheat Flour',
+      category: 'Grains',
+      currentPrice: 32,
+      previousPrice: 34,
+      change: -5.9,
+      unit: 'kg',
+      trend: 'down',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 14
     },
     {
-      id: '8',
-      name: 'Coriander',
-      category: 'Spices',
-      current_price: 220,
-      price_change: -3.2,
-      high_24h: 230,
-      low_24h: 210,
-      location: 'Pune Market'
-    },
-    {
-      id: '9',
-      name: 'Coconut Oil',
-      category: 'Oil',
-      current_price: 140,
-      price_change: 2.8,
-      high_24h: 145,
-      low_24h: 135,
-      location: 'Kerala Market'
-    },
-    {
-      id: '10',
       name: 'Potatoes',
       category: 'Vegetables',
-      current_price: 25,
-      price_change: -1.8,
-      high_24h: 27,
-      low_24h: 23,
-      location: 'Punjab Market'
+      currentPrice: 28,
+      previousPrice: 25,
+      change: 12.0,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'high',
+      forecast: 'rising',
+      suppliers: 18
     },
     {
-      id: '11',
-      name: 'Red Lentils',
-      category: 'Grains',
-      current_price: 95,
-      price_change: 4.2,
-      high_24h: 98,
-      low_24h: 90,
-      location: 'Rajasthan Market'
+      name: 'Apples',
+      category: 'Fruits',
+      currentPrice: 150,
+      previousPrice: 145,
+      change: 3.4,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 9
     },
     {
-      id: '12',
-      name: 'Ginger',
+      name: 'Chili Powder',
       category: 'Spices',
-      current_price: 80,
-      price_change: 15.3,
-      high_24h: 85,
-      low_24h: 70,
-      location: 'Karnataka Market'
+      currentPrice: 380,
+      previousPrice: 395,
+      change: -3.8,
+      unit: 'kg',
+      trend: 'down',
+      volatility: 'medium',
+      forecast: 'falling',
+      suppliers: 11
+    },
+    {
+      name: 'Toor Dal',
+      category: 'Pulses',
+      currentPrice: 125,
+      previousPrice: 130,
+      change: -3.8,
+      unit: 'kg',
+      trend: 'down',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 7
+    },
+    {
+      name: 'Milk',
+      category: 'Dairy',
+      currentPrice: 55,
+      previousPrice: 52,
+      change: 5.8,
+      unit: '1L',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'rising',
+      suppliers: 13
+    },
+    {
+      name: 'Bananas',
+      category: 'Fruits',
+      currentPrice: 45,
+      previousPrice: 48,
+      change: -6.3,
+      unit: 'dozen',
+      trend: 'down',
+      volatility: 'medium',
+      forecast: 'stable',
+      suppliers: 16
+    },
+    {
+      name: 'Coriander Seeds',
+      category: 'Spices',
+      currentPrice: 320,
+      previousPrice: 310,
+      change: 3.2,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 8
+    },
+    {
+      name: 'Mustard Oil',
+      category: 'Oils',
+      currentPrice: 165,
+      previousPrice: 170,
+      change: -2.9,
+      unit: '1L',
+      trend: 'down',
+      volatility: 'low',
+      forecast: 'falling',
+      suppliers: 5
+    },
+    {
+      name: 'Moong Dal',
+      category: 'Pulses',
+      currentPrice: 110,
+      previousPrice: 105,
+      change: 4.8,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'medium',
+      forecast: 'rising',
+      suppliers: 9
+    },
+    {
+      name: 'Paneer',
+      category: 'Dairy',
+      currentPrice: 280,
+      previousPrice: 275,
+      change: 1.8,
+      unit: 'kg',
+      trend: 'up',
+      volatility: 'low',
+      forecast: 'stable',
+      suppliers: 6
     }
   ];
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'All' || product.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredData = marketData.filter(item => 
+    selectedCategory === 'All' || item.category === selectedCategory
+  );
 
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
+  const handleFindSuppliers = (productName: string) => {
+    setSelectedProduct(productName);
+    setSupplierModalOpen(true);
+  };
 
-  const handleSetAlert = (productName: string, currentPrice: number) => {
-    addAlert(productName, currentPrice);
-    setShowConfetti(productName);
+  const handleSetAlert = async (productName: string, currentPrice: number) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to set price alerts.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log(`Setting alert for: ${productName} at price: ₹${currentPrice}`);
+    
+    const result = await addAlert(productName, currentPrice);
+    
+    if (result) {
+      setConfettiProduct(productName);
+      setShowConfetti(true);
+      console.log(`Alert successfully created for: ${productName}`);
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to create alert. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleConfettiComplete = () => {
+    setShowConfetti(false);
+    setConfettiProduct('');
+  };
+
+  const getTrendColor = (trend: string, change: number) => {
+    if (trend === 'up') return change > 5 ? 'text-red-600' : 'text-green-600';
+    return change < -5 ? 'text-green-600' : 'text-red-600';
+  };
+
+  const getTrendBg = (trend: string, change: number) => {
+    if (trend === 'up') return change > 5 ? 'bg-red-100' : 'bg-green-100';
+    return change < -5 ? 'bg-green-100' : 'bg-red-100';
+  };
+
+  const getVolatilityColor = (volatility: string) => {
+    switch (volatility) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
-    <AuthGuard>
-      <div className="min-h-screen bg-gradient-to-br from-lemon to-wisteria">
-        <Navbar />
-        
-        <div className="pt-24 pb-16 px-4">
-          <div className="container mx-auto">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="text-5xl font-black text-black mb-4">
-                MARKET <span className="text-[#59D35D]">PRICES</span>
-              </h1>
-              <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-                Real-time market prices and trends for fresh produce
-              </p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30">
+      <Navbar />
+      
+      <div className="pt-24 pb-16 px-4">
+        <div className="container mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-black text-black mb-4">
+              <span className="text-[#59D35D]">MARKET</span> RATES
+            </h1>
+            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
+              Track live prices, trends, and forecasts for all your ingredients
+            </p>
+          </div>
 
-            {/* Search and Filters */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-white/20 shadow-xl">
-              <div className="grid md:grid-cols-4 gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
-                  <Input
-                    placeholder="Search products..."
-                    className="pl-10 font-semibold"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+          {/* Controls */}
+          <div className="bg-gradient-to-r from-wisteria/20 to-lemon/30 backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-wisteria/30">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Period Selection */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Time Period</label>
+                <div className="flex gap-2">
+                  {periods.map(period => (
+                    <Button
+                      key={period.value}
+                      variant={selectedPeriod === period.value ? "default" : "outline"}
+                      onClick={() => setSelectedPeriod(period.value)}
+                      className={selectedPeriod === period.value 
+                        ? "bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold" 
+                        : "border-2 border-wisteria/50 bg-white/80 font-bold hover:bg-wisteria/10"
+                      }
+                    >
+                      <Calendar className="h-4 w-4 mr-2" />
+                      {period.label}
+                    </Button>
+                  ))}
                 </div>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="font-semibold">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(category => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={locationFilter} onValueChange={setLocationFilter}>
-                  <SelectTrigger className="font-semibold">
-                    <SelectValue placeholder="Location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All">All Locations</SelectItem>
-                    <SelectItem value="Delhi">Delhi</SelectItem>
-                    <SelectItem value="Mumbai">Mumbai</SelectItem>
-                    <SelectItem value="Bangalore">Bangalore</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button className="bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
+              </div>
+
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map(category => (
+                    <Button
+                      key={category}
+                      variant={selectedCategory === category ? "default" : "outline"}
+                      onClick={() => setSelectedCategory(category)}
+                      size="sm"
+                      className={selectedCategory === category 
+                        ? "bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold" 
+                        : "border-2 border-wisteria/50 bg-white/80 font-bold hover:bg-wisteria/10"
+                      }
+                    >
+                      {category}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Market Data Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map(product => (
-                <Card key={product.id} className="bg-white/95 border-2 border-white/30 hover:shadow-2xl transition-all duration-300 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-black text-black mb-2">
-                      {product.name}
-                    </CardTitle>
-                    <Badge variant="secondary" className="w-fit bg-lemon/30 text-gray-800 font-semibold">
-                      {product.category}
-                    </Badge>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <div className="text-2xl font-black text-[#59D35D]">₹{product.current_price}/kg</div>
-                        <div className="text-sm text-gray-500 font-semibold">Current Price</div>
-                      </div>
-                      <div className={`flex items-center ${product.price_change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {product.price_change >= 0 ? (
-                          <TrendingUp className="h-4 w-4 mr-1" />
+          {/* Market Overview Stats */}
+          <div className="grid md:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-gradient-to-br from-white to-lemon/30 backdrop-blur-sm border-2 border-wisteria/20">
+              <CardContent className="p-6 text-center">
+                <TrendingUp className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                <div className="text-2xl font-black text-green-600">12</div>
+                <div className="text-sm font-semibold text-gray-600">Items Rising</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-white to-wisteria/30 backdrop-blur-sm border-2 border-wisteria/20">
+              <CardContent className="p-6 text-center">
+                <TrendingDown className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                <div className="text-2xl font-black text-red-600">8</div>
+                <div className="text-sm font-semibold text-gray-600">Items Falling</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-lemon/40 to-white backdrop-blur-sm border-2 border-wisteria/20">
+              <CardContent className="p-6 text-center">
+                <AlertTriangle className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                <div className="text-2xl font-black text-yellow-600">3</div>
+                <div className="text-sm font-semibold text-gray-600">High Volatility</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-wisteria/30 to-white backdrop-blur-sm border-2 border-wisteria/20">
+              <CardContent className="p-6 text-center">
+                <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                <div className="text-2xl font-black text-blue-600">16</div>
+                <div className="text-sm font-semibold text-gray-600">Total Items Tracked</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Price Cards */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredData.map(item => (
+              <Card key={item.name} className="bg-white border-2 border-wisteria/30 hover:shadow-xl hover:border-wisteria/50 transition-all duration-300">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-xl font-black text-black mb-1">
+                        {item.name}
+                      </CardTitle>
+                      <Badge variant="outline" className="text-xs font-semibold mb-2 border-wisteria/40 text-wisteria bg-wisteria/10">
+                        {item.category}
+                      </Badge>
+                    </div>
+                    <div className="text-right">
+                      <div className={`flex items-center text-sm font-bold p-2 rounded-lg ${getTrendBg(item.trend, item.change)}`}>
+                        {item.trend === 'up' ? (
+                          <TrendingUp className={`h-4 w-4 mr-1 ${getTrendColor(item.trend, item.change)}`} />
                         ) : (
-                          <TrendingDown className="h-4 w-4 mr-1" />
+                          <TrendingDown className={`h-4 w-4 mr-1 ${getTrendColor(item.trend, item.change)}`} />
                         )}
-                        <span className="text-sm font-bold">{product.price_change >= 0 ? '+' : ''}{product.price_change}%</span>
+                        <span className={getTrendColor(item.trend, item.change)}>
+                          {item.change > 0 ? '+' : ''}{item.change.toFixed(1)}%
+                        </span>
                       </div>
                     </div>
-                    
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 font-semibold">24h High:</span>
-                        <span className="text-sm font-bold">₹{product.high_24h}/kg</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 font-semibold">24h Low:</span>
-                        <span className="text-sm font-bold">₹{product.low_24h}/kg</span>
-                      </div>
-                    </div>
+                  </div>
+                </CardHeader>
 
-                    <div className="flex items-center text-sm text-gray-600 mb-4">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span className="font-semibold">{product.location}</span>
+                <CardContent>
+                  {/* Price Display */}
+                  <div className="mb-4">
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="text-3xl font-black text-black">₹{item.currentPrice}</span>
+                      <span className="text-sm font-semibold text-gray-500">per {item.unit}</span>
                     </div>
+                    <div className="text-sm text-gray-600">
+                      <span className="font-semibold">Previous: ₹{item.previousPrice}</span>
+                    </div>
+                  </div>
 
+                  {/* Metrics */}
+                  <div className="space-y-3 mb-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold text-gray-600">Volatility:</span>
+                      <Badge className={getVolatilityColor(item.volatility)}>
+                        {item.volatility}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold text-gray-600">Forecast:</span>
+                      <span className="text-sm font-bold text-gray-800 capitalize">{item.forecast}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold text-gray-600">Suppliers:</span>
+                      <span className="text-sm font-bold text-[#59D35D]">{item.suppliers} available</span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
                     <Button 
-                      className="w-full bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold"
-                      onClick={() => handleSetAlert(product.name, product.current_price)}
+                      className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold"
+                      onClick={() => handleFindSuppliers(item.name)}
                     >
-                      Set Price Alert
+                      Find Suppliers
                     </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                    <Button 
+                      variant="outline" 
+                      className="border-2 border-wisteria/50 font-bold hover:bg-wisteria/10"
+                      onClick={() => handleSetAlert(item.name, item.currentPrice)}
+                    >
+                      Set Alert
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Market Insights */}
+          <div className="mt-12">
+            <h2 className="text-3xl font-black text-black mb-6">Market Insights</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="bg-gradient-to-r from-green-400 to-green-500 border-0">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-black text-white mb-2">Best Time to Buy</h3>
+                  <p className="text-green-100 mb-4">
+                    Onion prices are expected to drop 15% in the next 3 days. Consider bulk purchasing.
+                  </p>
+                  <Button className="bg-white text-green-600 hover:bg-gray-100 font-bold">
+                    View Recommendations
+                  </Button>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gradient-to-r from-wisteria to-wisteria/80 border-0">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-black text-white mb-2">Price Alert</h3>
+                  <p className="text-white/90 mb-4">
+                    Cooking oil prices showing unusual volatility. Monitor closely for bulk orders.
+                  </p>
+                  <Button className="bg-white text-wisteria hover:bg-gray-100 font-bold">
+                    Set Price Alert
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
-
-        {showConfetti && (
-          <ConfettiAlert
-            productName={showConfetti}
-            onComplete={() => setShowConfetti(null)}
-          />
-        )}
       </div>
-    </AuthGuard>
+
+      {/* Modals and Effects */}
+      <SupplierModal 
+        isOpen={supplierModalOpen}
+        onClose={() => setSupplierModalOpen(false)}
+        productName={selectedProduct}
+      />
+      
+      {showConfetti && (
+        <ConfettiAlert 
+          productName={confettiProduct}
+          onComplete={handleConfettiComplete}
+        />
+      )}
+    </div>
   );
 };
 
