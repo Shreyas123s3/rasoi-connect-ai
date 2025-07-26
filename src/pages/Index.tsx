@@ -1,10 +1,10 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Store, Users, Bot, TrendingUp, MapPin, Bell, Star, Shield, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
-import DotGrid from '@/components/DotGrid';
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -47,24 +47,9 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#FFFEBF] to-[#FDFDCR]">
       <Navbar />
       
-      {/* Hero Section with Dot Grid Background */}
-      <section className="pt-24 pb-16 px-4 relative">
-        {/* Dot Grid Background Animation */}
-        <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 0 }}>
-          <DotGrid
-            dotSize={10}
-            gap={15}
-            baseColor="#5227FF"
-            activeColor="#5227FF"
-            proximity={120}
-            shockRadius={250}
-            shockStrength={5}
-            resistance={750}
-            returnDuration={1.5}
-          />
-        </div>
-        
-        <div className="container mx-auto text-center relative z-10">
+      {/* Hero Section */}
+      <section className="pt-24 pb-16 px-4">
+        <div className="container mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-6xl md:text-8xl font-black text-black mb-4 leading-tight">
               SOURCE
