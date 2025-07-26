@@ -68,7 +68,7 @@ const Profile = () => {
           location: data.location || '',
           role: data.role || 'vendor',
           phone: data.phone || '',
-          about: data.about || ''
+          about: '' // Set to empty string since 'about' field doesn't exist in database yet
         });
       }
     } catch (error) {
@@ -83,12 +83,15 @@ const Profile = () => {
     
     setSaving(true);
     try {
+      // For now, we'll exclude the 'about' field since it doesn't exist in the database
+      const { about, ...profileDataWithoutAbout } = profileData;
+      
       const { error } = await supabase
         .from('profiles')
         .upsert({
           id: user.id,
           email: user.email,
-          ...profileData,
+          ...profileDataWithoutAbout,
           updated_at: new Date().toISOString()
         });
 
@@ -257,15 +260,17 @@ const Profile = () => {
             <div>
               <Label htmlFor="about" className="text-sm font-bold flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                About
+                About (Coming Soon)
               </Label>
               <Textarea
                 id="about"
                 value={profileData.about}
                 onChange={(e) => setProfileData(prev => ({ ...prev, about: e.target.value }))}
-                placeholder="Tell us about yourself..."
+                placeholder="Tell us about yourself... (This field will be saved once database is updated)"
                 className="font-semibold border-wisteria/30 min-h-[100px]"
+                disabled
               />
+              <p className="text-xs text-gray-500 mt-1">This field is temporarily disabled until the database schema is updated.</p>
             </div>
 
             {/* Action Buttons */}

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +9,7 @@ import BulkOrderForm from '@/components/BulkOrderForm';
 
 const BulkOrders = () => {
   const { user } = useAuth();
-  const { data: bulkOrders, isLoading, refetch } = useBulkOrders();
+  const { bulkOrders, loading, refetch } = useBulkOrders();
   const [showForm, setShowForm] = useState(false);
 
   const handleFormSuccess = () => {
@@ -38,7 +37,7 @@ const BulkOrders = () => {
     });
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6">
         <div className="max-w-6xl mx-auto">
