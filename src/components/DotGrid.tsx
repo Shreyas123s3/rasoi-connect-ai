@@ -1,3 +1,4 @@
+
 'use client';
 import { useRef, useEffect, useCallback, useMemo } from "react";
 import { gsap } from "gsap";
@@ -185,6 +186,7 @@ const DotGrid = ({
   }, [buildGrid]);
 
   useEffect(() => {
+    // Early return if not in browser
     if (typeof window === "undefined") return;
 
     const onMove = (e: MouseEvent) => {
@@ -270,16 +272,17 @@ const DotGrid = ({
 
     const throttledMove = throttle(onMove, 50);
     
-    const globalWindow = window as Window & typeof globalThis;
-    const mouseMoveHandler = throttledMove as (event: Event) => void;
-    const clickHandler = onClick as (event: Event) => void;
+    // Properly type and setup event listeners
+    const windowObj = globalThis as Window;
+    const moveHandler = throttledMove as (this: Window, ev: MouseEvent) => void;
+    const clickHandler = onClick as (this: Window, ev: MouseEvent) => void;
     
-    globalWindow.addEventListener("mousemove", mouseMoveHandler, { passive: true });
-    globalWindow.addEventListener("click", clickHandler);
+    windowObj.addEventListener("mousemove", moveHandler, { passive: true });
+    windowObj.addEventListener("click", clickHandler);
 
     return () => {
-      globalWindow.removeEventListener("mousemove", mouseMoveHandler);
-      globalWindow.removeEventListener("click", clickHandler);
+      windowObj.removeEventListener("mousemove", moveHandler);
+      windowObj.removeEventListener("click", clickHandler);
     };
   }, [
     maxSpeed,
