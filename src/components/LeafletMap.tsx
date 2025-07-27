@@ -139,7 +139,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
   return (
     <div className="relative">
       <div id="map" className="w-full h-[500px] rounded-lg border-2 border-white/30 shadow-lg"></div>
-      <style jsx>{`
+      <style>{`
         .user-marker-container {
           background: transparent;
           border: none;
