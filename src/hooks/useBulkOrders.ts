@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -27,10 +27,11 @@ export const useBulkOrders = () => {
   const [bulkOrders, setBulkOrders] = useState<BulkOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [participationCache, setParticipationCache] = useState<{ [key: string]: boolean }>({});
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const fetchBulkOrders = async () => {
+  const fetchBulkOrders = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -48,7 +49,6 @@ export const useBulkOrders = () => {
         return;
       }
 
-      // Type cast the data to ensure proper typing
       const typedBulkOrders = (data || []).map(order => ({
         ...order,
         status: order.status as 'active' | 'completed' | 'cancelled',
@@ -61,15 +61,46 @@ export const useBulkOrders = () => {
       }));
 
       setBulkOrders(typedBulkOrders);
+
+      // Batch check participation status for all orders
+      if (user && typedBulkOrders.length > 0) {
+        await batchCheckParticipation(typedBulkOrders.map(order => order.id));
+      }
     } catch (err) {
       console.error('Error fetching bulk orders:', err);
       setError('Failed to fetch bulk orders');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const joinBulkOrder = async (bulkOrderId: string, quantity: number = 1) => {
+  const batchCheckParticipation = useCallback(async (orderIds: string[]) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('bulk_order_participants')
+        .select('bulk_order_id')
+        .eq('user_id', user.id)
+        .in('bulk_order_id', orderIds);
+
+      if (error) {
+        console.error('Error checking participation:', error);
+        return;
+      }
+
+      const newParticipationCache: { [key: string]: boolean } = {};
+      orderIds.forEach(orderId => {
+        newParticipationCache[orderId] = data?.some(p => p.bulk_order_id === orderId) || false;
+      });
+
+      setParticipationCache(newParticipationCache);
+    } catch (error) {
+      console.error('Error in batch participation check:', error);
+    }
+  }, [user]);
+
+  const joinBulkOrder = useCallback(async (bulkOrderId: string, quantity: number = 1) => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -79,8 +110,18 @@ export const useBulkOrders = () => {
       return false;
     }
 
+    // Check cache first
+    if (participationCache[bulkOrderId]) {
+      toast({
+        title: "Already Joined",
+        description: "You have already joined this bulk order",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     try {
-      // Check if user has already joined this bulk order
+      // Double-check participation to prevent race conditions
       const { data: existingParticipation } = await supabase
         .from('bulk_order_participants')
         .select('id')
@@ -89,6 +130,8 @@ export const useBulkOrders = () => {
         .single();
 
       if (existingParticipation) {
+        // Update cache
+        setParticipationCache(prev => ({ ...prev, [bulkOrderId]: true }));
         toast({
           title: "Already Joined",
           description: "You have already joined this bulk order",
@@ -97,7 +140,7 @@ export const useBulkOrders = () => {
         return false;
       }
 
-      // First, add the user to bulk_order_participants
+      // Add the user to bulk_order_participants
       const { error: insertError } = await supabase
         .from('bulk_order_participants')
         .insert([{
@@ -116,7 +159,7 @@ export const useBulkOrders = () => {
         return false;
       }
 
-      // Then, get the current participants count and increment it
+      // Update participant count
       const { data: currentOrder } = await supabase
         .from('bulk_orders')
         .select('current_participants')
@@ -137,6 +180,9 @@ export const useBulkOrders = () => {
         }
       }
 
+      // Update cache
+      setParticipationCache(prev => ({ ...prev, [bulkOrderId]: true }));
+
       toast({
         title: "Success",
         description: "Successfully joined the bulk order!",
@@ -154,10 +200,15 @@ export const useBulkOrders = () => {
       });
       return false;
     }
-  };
+  }, [user, participationCache, toast, fetchBulkOrders]);
 
-  const checkUserParticipation = async (bulkOrderId: string) => {
+  const checkUserParticipation = useCallback(async (bulkOrderId: string) => {
     if (!user) return false;
+
+    // Return cached result if available
+    if (participationCache[bulkOrderId] !== undefined) {
+      return participationCache[bulkOrderId];
+    }
 
     try {
       const { data } = await supabase
@@ -167,22 +218,31 @@ export const useBulkOrders = () => {
         .eq('user_id', user.id)
         .single();
 
-      return !!data;
+      const hasParticipated = !!data;
+      
+      // Update cache
+      setParticipationCache(prev => ({ ...prev, [bulkOrderId]: hasParticipated }));
+      
+      return hasParticipated;
     } catch (error) {
+      console.error('Error checking participation:', error);
       return false;
     }
-  };
+  }, [user, participationCache]);
 
   useEffect(() => {
     fetchBulkOrders();
-  }, []);
+  }, [fetchBulkOrders]);
 
-  return {
+  const memoizedReturn = useMemo(() => ({
     bulkOrders,
     loading,
     error,
     joinBulkOrder,
     checkUserParticipation,
-    refetch: fetchBulkOrders
-  };
+    refetch: fetchBulkOrders,
+    participationStatus: participationCache
+  }), [bulkOrders, loading, error, joinBulkOrder, checkUserParticipation, fetchBulkOrders, participationCache]);
+
+  return memoizedReturn;
 };

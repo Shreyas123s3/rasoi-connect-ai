@@ -22,12 +22,29 @@ interface BulkOrderFormProps {
   onSuccess: () => void;
 }
 
+interface FormData {
+  title: string;
+  description: string;
+  product_id: string;
+  target_price: string;
+  current_price: string;
+  minimum_quantity: string;
+  target_participants: string;
+  location: string;
+  expires_at: string;
+}
+
+interface ValidationErrors {
+  [key: string]: string;
+}
+
 const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [formData, setFormData] = useState({
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [formData, setFormData] = useState<FormData>({
     title: '',
     description: '',
     product_id: '',
@@ -52,20 +69,111 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
 
       if (error) {
         console.error('Error fetching products:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load products",
+          variant: "destructive",
+        });
         return;
       }
 
       setProducts(data || []);
     } catch (error) {
       console.error('Error fetching products:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load products",
+        variant: "destructive",
+      });
     }
+  };
+
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {};
+
+    // Title validation
+    if (!formData.title.trim()) {
+      errors.title = 'Title is required';
+    } else if (formData.title.trim().length < 3) {
+      errors.title = 'Title must be at least 3 characters';
+    }
+
+    // Product validation
+    if (!formData.product_id) {
+      errors.product_id = 'Product selection is required';
+    }
+
+    // Price validations
+    const targetPrice = parseFloat(formData.target_price);
+    const currentPrice = parseFloat(formData.current_price);
+    
+    if (!formData.target_price || isNaN(targetPrice) || targetPrice <= 0) {
+      errors.target_price = 'Valid target price is required';
+    }
+
+    if (!formData.current_price || isNaN(currentPrice) || currentPrice <= 0) {
+      errors.current_price = 'Valid current price is required';
+    }
+
+    if (targetPrice && currentPrice && targetPrice >= currentPrice) {
+      errors.target_price = 'Target price must be lower than current price';
+    }
+
+    // Quantity validation
+    const minQuantity = parseInt(formData.minimum_quantity);
+    if (!formData.minimum_quantity || isNaN(minQuantity) || minQuantity <= 0) {
+      errors.minimum_quantity = 'Valid minimum quantity is required';
+    }
+
+    // Participants validation
+    const targetParticipants = parseInt(formData.target_participants);
+    if (!formData.target_participants || isNaN(targetParticipants) || targetParticipants < 2) {
+      errors.target_participants = 'Target participants must be at least 2';
+    }
+
+    // Location validation
+    if (!formData.location.trim()) {
+      errors.location = 'Location is required';
+    }
+
+    // Expiry date validation
+    if (formData.expires_at) {
+      const expiryDate = new Date(formData.expires_at);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (expiryDate <= today) {
+        errors.expires_at = 'Expiry date must be in the future';
+      }
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to create a bulk order",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fix the errors in the form",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setLoading(true);
+    
     try {
       // Calculate expires_at as 30 days from now if not provided
       const expiresAt = formData.expires_at || 
@@ -75,14 +183,14 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
         .from('bulk_orders')
         .insert({
           creator_id: user.id,
-          title: formData.title,
-          description: formData.description,
+          title: formData.title.trim(),
+          description: formData.description.trim(),
           product_id: formData.product_id,
           target_price: parseFloat(formData.target_price),
           current_price: parseFloat(formData.current_price),
           minimum_quantity: parseInt(formData.minimum_quantity),
           target_participants: parseInt(formData.target_participants),
-          location: formData.location,
+          location: formData.location.trim(),
           expires_at: expiresAt + 'T23:59:59.999Z',
           status: 'active'
         });
@@ -116,6 +224,15 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
     }
   };
 
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
   const selectedProduct = products.find(p => p.id === formData.product_id);
 
   return (
@@ -139,11 +256,14 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) => handleInputChange('title', e.target.value)}
                 placeholder="e.g., Bulk Rice Order for December"
-                className="font-semibold"
+                className={`font-semibold ${validationErrors.title ? 'border-red-500' : ''}`}
                 required
               />
+              {validationErrors.title && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.title}</p>
+              )}
             </div>
 
             <div>
@@ -151,7 +271,7 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => handleInputChange('description', e.target.value)}
                 placeholder="Describe your bulk order requirements..."
                 className="font-semibold"
               />
@@ -161,10 +281,10 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
               <Label className="text-sm font-bold">Product *</Label>
               <Select 
                 value={formData.product_id} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, product_id: value }))}
+                onValueChange={(value) => handleInputChange('product_id', value)}
                 required
               >
-                <SelectTrigger className="font-semibold">
+                <SelectTrigger className={`font-semibold ${validationErrors.product_id ? 'border-red-500' : ''}`}>
                   <SelectValue placeholder="Select a product" />
                 </SelectTrigger>
                 <SelectContent>
@@ -175,6 +295,9 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
                   ))}
                 </SelectContent>
               </Select>
+              {validationErrors.product_id && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.product_id}</p>
+              )}
             </div>
 
             <div>
@@ -184,12 +307,16 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
               <Input
                 id="minimum_quantity"
                 type="number"
+                min="1"
                 value={formData.minimum_quantity}
-                onChange={(e) => setFormData(prev => ({ ...prev, minimum_quantity: e.target.value }))}
+                onChange={(e) => handleInputChange('minimum_quantity', e.target.value)}
                 placeholder="50"
-                className="font-semibold"
+                className={`font-semibold ${validationErrors.minimum_quantity ? 'border-red-500' : ''}`}
                 required
               />
+              {validationErrors.minimum_quantity && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.minimum_quantity}</p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -198,13 +325,17 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
                 <Input
                   id="target_price"
                   type="number"
+                  min="0.01"
                   step="0.01"
                   value={formData.target_price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, target_price: e.target.value }))}
+                  onChange={(e) => handleInputChange('target_price', e.target.value)}
                   placeholder="25.00"
-                  className="font-semibold"
+                  className={`font-semibold ${validationErrors.target_price ? 'border-red-500' : ''}`}
                   required
                 />
+                {validationErrors.target_price && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.target_price}</p>
+                )}
               </div>
 
               <div>
@@ -212,13 +343,17 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
                 <Input
                   id="current_price"
                   type="number"
+                  min="0.01"
                   step="0.01"
                   value={formData.current_price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, current_price: e.target.value }))}
+                  onChange={(e) => handleInputChange('current_price', e.target.value)}
                   placeholder="30.00"
-                  className="font-semibold"
+                  className={`font-semibold ${validationErrors.current_price ? 'border-red-500' : ''}`}
                   required
                 />
+                {validationErrors.current_price && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.current_price}</p>
+                )}
               </div>
             </div>
 
@@ -228,12 +363,16 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
                 <Input
                   id="target_participants"
                   type="number"
+                  min="2"
                   value={formData.target_participants}
-                  onChange={(e) => setFormData(prev => ({ ...prev, target_participants: e.target.value }))}
+                  onChange={(e) => handleInputChange('target_participants', e.target.value)}
                   placeholder="10"
-                  className="font-semibold"
+                  className={`font-semibold ${validationErrors.target_participants ? 'border-red-500' : ''}`}
                   required
                 />
+                {validationErrors.target_participants && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.target_participants}</p>
+                )}
               </div>
 
               <div>
@@ -241,11 +380,14 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
                 <Input
                   id="location"
                   value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
                   placeholder="Mumbai, Maharashtra"
-                  className="font-semibold"
+                  className={`font-semibold ${validationErrors.location ? 'border-red-500' : ''}`}
                   required
                 />
+                {validationErrors.location && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.location}</p>
+                )}
               </div>
             </div>
 
@@ -255,10 +397,13 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
                 id="expires_at"
                 type="date"
                 value={formData.expires_at}
-                onChange={(e) => setFormData(prev => ({ ...prev, expires_at: e.target.value }))}
+                onChange={(e) => handleInputChange('expires_at', e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="font-semibold"
+                className={`font-semibold ${validationErrors.expires_at ? 'border-red-500' : ''}`}
               />
+              {validationErrors.expires_at && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.expires_at}</p>
+              )}
               <p className="text-xs text-gray-500 mt-1">Leave blank to set expiry to 30 days from now</p>
             </div>
 
