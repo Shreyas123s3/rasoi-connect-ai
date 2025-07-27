@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,7 +40,7 @@ const BulkOrders = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6 overflow-y-auto">
+      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-wisteria mx-auto mb-4"></div>
@@ -51,8 +52,8 @@ const BulkOrders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6 overflow-y-auto">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-6">
+      <div className="max-w-6xl mx-auto h-screen overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-black text-black mb-2">Bulk Orders</h1>

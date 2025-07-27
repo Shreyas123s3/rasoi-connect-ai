@@ -1,15 +1,20 @@
+
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Star, Shield, Clock, MapPin, Truck } from 'lucide-react';
+import { Search, Filter, Star, Shield, Clock, MapPin, Truck, X, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
 
 const Suppliers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('rating');
+  const [showProductsModal, setShowProductsModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
 
   const categories = ['All', 'Vegetables', 'Spices', 'Grains', 'Oils', 'Dairy', 'Meat'];
 
@@ -28,7 +33,14 @@ const Suppliers = () => {
       badges: ['FSSAI Verified', 'Government Registered'],
       image: '/placeholder.svg',
       reviews: 324,
-      savings: '25%'
+      savings: '25%',
+      phone: '+91 9876543210',
+      products: [
+        { name: 'Fresh Onions', price: '₹25/kg', packSize: '1kg', stock: '500kg' },
+        { name: 'Tomatoes', price: '₹35/kg', packSize: '1kg', stock: '300kg' },
+        { name: 'Potatoes', price: '₹20/kg', packSize: '1kg', stock: '800kg' },
+        { name: 'Carrots', price: '₹40/kg', packSize: '1kg', stock: '200kg' }
+      ]
     },
     {
       id: 2,
@@ -44,7 +56,14 @@ const Suppliers = () => {
       badges: ['FSSAI Verified', 'ISO Certified'],
       image: '/placeholder.svg',
       reviews: 456,
-      savings: '30%'
+      savings: '30%',
+      phone: '+91 9823456789',
+      products: [
+        { name: 'Turmeric Powder', price: '₹180/kg', packSize: '500g', stock: '150kg' },
+        { name: 'Red Chili Powder', price: '₹220/kg', packSize: '500g', stock: '200kg' },
+        { name: 'Garam Masala', price: '₹350/kg', packSize: '250g', stock: '100kg' },
+        { name: 'Cumin Seeds', price: '₹280/kg', packSize: '500g', stock: '80kg' }
+      ]
     },
     {
       id: 3,
@@ -60,7 +79,14 @@ const Suppliers = () => {
       badges: ['FSSAI Verified', 'Organic Certified'],
       image: '/placeholder.svg',
       reviews: 278,
-      savings: '20%'
+      savings: '20%',
+      phone: '+91 9834567890',
+      products: [
+        { name: 'Basmati Rice', price: '₹120/kg', packSize: '5kg', stock: '2000kg' },
+        { name: 'Wheat Flour', price: '₹40/kg', packSize: '10kg', stock: '1500kg' },
+        { name: 'Toor Dal', price: '₹85/kg', packSize: '1kg', stock: '500kg' },
+        { name: 'Moong Dal', price: '₹95/kg', packSize: '1kg', stock: '400kg' }
+      ]
     },
     {
       id: 4,
@@ -76,7 +102,198 @@ const Suppliers = () => {
       badges: ['FSSAI Verified'],
       image: '/placeholder.svg',
       reviews: 189,
-      savings: '18%'
+      savings: '18%',
+      phone: '+91 9845678901',
+      products: [
+        { name: 'Sunflower Oil', price: '₹140/L', packSize: '1L', stock: '300L' },
+        { name: 'Mustard Oil', price: '₹160/L', packSize: '1L', stock: '200L' },
+        { name: 'Coconut Oil', price: '₹180/L', packSize: '500ml', stock: '150L' },
+        { name: 'Groundnut Oil', price: '₹150/L', packSize: '1L', stock: '250L' }
+      ]
+    },
+    {
+      id: 5,
+      name: 'Green Valley Farms',
+      category: 'Vegetables',
+      rating: 4.5,
+      trustScore: 90,
+      verified: true,
+      distance: '2.8 km',
+      deliveryTime: '2-5 hours',
+      minOrder: '₹600',
+      specialties: ['Leafy Greens', 'Organic Vegetables', 'Seasonal Produce'],
+      badges: ['FSSAI Verified', 'Organic Certified'],
+      image: '/placeholder.svg',
+      reviews: 245,
+      savings: '22%',
+      phone: '+91 9856789012',
+      products: [
+        { name: 'Spinach', price: '₹30/kg', packSize: '250g', stock: '100kg' },
+        { name: 'Cauliflower', price: '₹25/kg', packSize: '1pc', stock: '200pc' },
+        { name: 'Broccoli', price: '₹60/kg', packSize: '500g', stock: '80kg' },
+        { name: 'Cabbage', price: '₹20/kg', packSize: '1pc', stock: '150pc' }
+      ]
+    },
+    {
+      id: 6,
+      name: 'Himalayan Spice Co.',
+      category: 'Spices',
+      rating: 4.8,
+      trustScore: 94,
+      verified: true,
+      distance: '3.5 km',
+      deliveryTime: '3-5 hours',
+      minOrder: '₹400',
+      specialties: ['Whole Spices', 'Cardamom', 'Saffron'],
+      badges: ['FSSAI Verified', 'Export Quality'],
+      image: '/placeholder.svg',
+      reviews: 356,
+      savings: '28%',
+      phone: '+91 9867890123',
+      products: [
+        { name: 'Green Cardamom', price: '₹1200/kg', packSize: '100g', stock: '25kg' },
+        { name: 'Black Pepper', price: '₹450/kg', packSize: '250g', stock: '60kg' },
+        { name: 'Cloves', price: '₹800/kg', packSize: '100g', stock: '20kg' },
+        { name: 'Cinnamon Sticks', price: '₹350/kg', packSize: '250g', stock: '40kg' }
+      ]
+    },
+    {
+      id: 7,
+      name: 'Dairy Fresh Solutions',
+      category: 'Dairy',
+      rating: 4.4,
+      trustScore: 87,
+      verified: true,
+      distance: '1.9 km',
+      deliveryTime: '1-2 hours',
+      minOrder: '₹300',
+      specialties: ['Fresh Milk', 'Paneer', 'Yogurt'],
+      badges: ['FSSAI Verified', 'ISO Certified'],
+      image: '/placeholder.svg',
+      reviews: 412,
+      savings: '15%',
+      phone: '+91 9878901234',
+      products: [
+        { name: 'Fresh Milk', price: '₹55/L', packSize: '1L', stock: '500L' },
+        { name: 'Paneer', price: '₹280/kg', packSize: '200g', stock: '100kg' },
+        { name: 'Greek Yogurt', price: '₹80/kg', packSize: '500g', stock: '200kg' },
+        { name: 'Butter', price: '₹450/kg', packSize: '100g', stock: '50kg' }
+      ]
+    },
+    {
+      id: 8,
+      name: 'Prime Meat Supply',
+      category: 'Meat',
+      rating: 4.6,
+      trustScore: 91,
+      verified: true,
+      distance: '2.6 km',
+      deliveryTime: '2-4 hours',
+      minOrder: '₹700',
+      specialties: ['Fresh Chicken', 'Mutton', 'Fish'],
+      badges: ['FSSAI Verified', 'Halal Certified'],
+      image: '/placeholder.svg',
+      reviews: 298,
+      savings: '20%',
+      phone: '+91 9889012345',
+      products: [
+        { name: 'Fresh Chicken', price: '₹180/kg', packSize: '1kg', stock: '300kg' },
+        { name: 'Mutton', price: '₹550/kg', packSize: '500g', stock: '150kg' },
+        { name: 'Fish (Rohu)', price: '₹220/kg', packSize: '1kg', stock: '200kg' },
+        { name: 'Prawns', price: '₹400/kg', packSize: '250g', stock: '80kg' }
+      ]
+    },
+    {
+      id: 9,
+      name: 'Organic Harvest Co.',
+      category: 'Vegetables',
+      rating: 4.7,
+      trustScore: 93,
+      verified: true,
+      distance: '3.8 km',
+      deliveryTime: '3-6 hours',
+      minOrder: '₹800',
+      specialties: ['Organic Vegetables', 'Herbs', 'Microgreens'],
+      badges: ['FSSAI Verified', 'Organic Certified', 'Pesticide Free'],
+      image: '/placeholder.svg',
+      reviews: 187,
+      savings: '24%',
+      phone: '+91 9890123456',
+      products: [
+        { name: 'Organic Tomatoes', price: '₹45/kg', packSize: '500g', stock: '200kg' },
+        { name: 'Fresh Basil', price: '₹60/kg', packSize: '100g', stock: '50kg' },
+        { name: 'Microgreens Mix', price: '₹120/kg', packSize: '200g', stock: '30kg' },
+        { name: 'Organic Cucumber', price: '₹35/kg', packSize: '500g', stock: '150kg' }
+      ]
+    },
+    {
+      id: 10,
+      name: 'Heritage Grains Ltd.',
+      category: 'Grains',
+      rating: 4.5,
+      trustScore: 89,
+      verified: true,
+      distance: '4.1 km',
+      deliveryTime: '4-7 hours',
+      minOrder: '₹1200',
+      specialties: ['Ancient Grains', 'Millets', 'Quinoa'],
+      badges: ['FSSAI Verified', 'Organic Certified'],
+      image: '/placeholder.svg',
+      reviews: 156,
+      savings: '19%',
+      phone: '+91 9901234567',
+      products: [
+        { name: 'Quinoa', price: '₹320/kg', packSize: '500g', stock: '120kg' },
+        { name: 'Finger Millet', price: '₹85/kg', packSize: '1kg', stock: '300kg' },
+        { name: 'Pearl Millet', price: '₹75/kg', packSize: '1kg', stock: '250kg' },
+        { name: 'Amaranth', price: '₹140/kg', packSize: '500g', stock: '180kg' }
+      ]
+    },
+    {
+      id: 11,
+      name: 'Coastal Oil Mills',
+      category: 'Oils',
+      rating: 4.3,
+      trustScore: 85,
+      verified: true,
+      distance: '5.2 km',
+      deliveryTime: '5-8 hours',
+      minOrder: '₹900',
+      specialties: ['Cold Pressed Oils', 'Sesame Oil', 'Coconut Oil'],
+      badges: ['FSSAI Verified', 'Cold Pressed'],
+      image: '/placeholder.svg',
+      reviews: 234,
+      savings: '16%',
+      phone: '+91 9912345678',
+      products: [
+        { name: 'Cold Pressed Coconut Oil', price: '₹220/L', packSize: '500ml', stock: '180L' },
+        { name: 'Sesame Oil', price: '₹280/L', packSize: '500ml', stock: '120L' },
+        { name: 'Castor Oil', price: '₹150/L', packSize: '250ml', stock: '80L' },
+        { name: 'Almond Oil', price: '₹850/L', packSize: '100ml', stock: '25L' }
+      ]
+    },
+    {
+      id: 12,
+      name: 'Rajasthani Spice House',
+      category: 'Spices',
+      rating: 4.9,
+      trustScore: 96,
+      verified: true,
+      distance: '2.1 km',
+      deliveryTime: '2-3 hours',
+      minOrder: '₹350',
+      specialties: ['Regional Spices', 'Spice Blends', 'Dry Fruits'],
+      badges: ['FSSAI Verified', 'Traditional Methods', 'Export Quality'],
+      image: '/placeholder.svg',
+      reviews: 423,
+      savings: '32%',
+      phone: '+91 9923456789',
+      products: [
+        { name: 'Rajasthani Garam Masala', price: '₹380/kg', packSize: '200g', stock: '90kg' },
+        { name: 'Dry Red Chilies', price: '₹320/kg', packSize: '500g', stock: '160kg' },
+        { name: 'Coriander Seeds', price: '₹180/kg', packSize: '500g', stock: '220kg' },
+        { name: 'Fennel Seeds', price: '₹240/kg', packSize: '250g', stock: '140kg' }
+      ]
     }
   ];
 
@@ -103,8 +320,18 @@ const Suppliers = () => {
       }
     });
 
+  const handleViewProducts = (supplier) => {
+    setSelectedSupplier(supplier);
+    setShowProductsModal(true);
+  };
+
+  const handleContact = (supplier) => {
+    setSelectedSupplier(supplier);
+    setShowContactModal(true);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lemon to-[#FDFDCR]">
+    <div className="min-h-screen bg-gradient-to-br from-lemon to-[#FDFDCR] overflow-y-auto">
       <Navbar />
       
       <div className="pt-24 pb-16 px-4">
@@ -240,10 +467,17 @@ const Suppliers = () => {
 
                   {/* Action Buttons */}
                   <div className="flex gap-2">
-                    <Button className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold">
+                    <Button 
+                      onClick={() => handleViewProducts(supplier)}
+                      className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold"
+                    >
                       View Products
                     </Button>
-                    <Button variant="outline" className="border-2 border-wisteria/30 font-bold text-wisteria hover:bg-wisteria hover:text-white">
+                    <Button 
+                      onClick={() => handleContact(supplier)}
+                      variant="outline" 
+                      className="border-2 border-wisteria/30 font-bold text-wisteria hover:bg-wisteria hover:text-white"
+                    >
                       Contact
                     </Button>
                   </div>
@@ -260,6 +494,73 @@ const Suppliers = () => {
           </div>
         </div>
       </div>
+
+      {/* Products Modal */}
+      <Dialog open={showProductsModal} onOpenChange={setShowProductsModal}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black text-black flex items-center gap-2">
+              <Package className="h-6 w-6 text-[#59D35D]" />
+              Products from {selectedSupplier?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid md:grid-cols-2 gap-4 mt-6">
+            {selectedSupplier?.products?.map((product, index) => (
+              <Card key={index} className="border-2 border-wisteria/20 hover:shadow-lg transition-shadow">
+                <CardContent className="p-4">
+                  <h3 className="font-black text-lg text-black mb-2">{product.name}</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-600">Price:</span>
+                      <span className="font-black text-[#59D35D]">{product.price}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-600">Pack Size:</span>
+                      <span className="font-semibold text-black">{product.packSize}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-600">Stock Left:</span>
+                      <Badge className="bg-green-100 text-green-800">
+                        {product.stock}
+                      </Badge>
+                    </div>
+                  </div>
+                  <Button className="w-full mt-4 bg-wisteria hover:bg-wisteria/90 text-white font-bold">
+                    Add to Cart
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contact Modal */}
+      <Dialog open={showContactModal} onOpenChange={setShowContactModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black text-black text-center">
+              Contact {selectedSupplier?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-8">
+            <div className="bg-[#59D35D]/10 rounded-2xl p-8 mb-6">
+              <div className="text-4xl font-black text-black mb-2">
+                {selectedSupplier?.phone}
+              </div>
+              <p className="text-sm text-gray-600 font-semibold">
+                Tap to call or save this number
+              </p>
+            </div>
+            <Button 
+              onClick={() => setShowContactModal(false)}
+              className="bg-wisteria hover:bg-wisteria/90 text-white font-bold px-8"
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

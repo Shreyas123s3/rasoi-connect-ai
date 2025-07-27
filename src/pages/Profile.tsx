@@ -142,7 +142,7 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 flex items-center justify-center p-4 overflow-y-auto">
+      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
           <CardContent className="text-center p-8">
             <LogIn className="mx-auto mb-4 h-16 w-16 text-wisteria" />
@@ -162,7 +162,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 flex items-center justify-center overflow-y-auto">
+      <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-wisteria mx-auto mb-4"></div>
           <p className="text-black font-semibold">Loading profile...</p>
@@ -172,8 +172,8 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-4 overflow-y-auto">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30 p-4">
+      <div className="max-w-2xl mx-auto h-screen overflow-y-auto">
         <Card className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-black text-black flex items-center justify-center gap-2">
