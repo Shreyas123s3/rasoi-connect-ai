@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -172,142 +173,138 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-lemon via-lemon/50 to-wisteria/30">
-      <div className="h-screen flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4">
-          <div className="max-w-2xl mx-auto">
-            <Card className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
-              <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-black text-black flex items-center justify-center gap-2">
-                  <User className="h-8 w-8" />
-                  My Profile
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Email Display */}
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Mail className="h-5 w-5 text-gray-600" />
-                    <Label className="text-sm font-bold text-gray-600">Email</Label>
-                  </div>
-                  <p className="text-black font-semibold">{user.email}</p>
-                </div>
+      <div className="max-w-2xl mx-auto p-4 min-h-screen">
+        <Card className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-black text-black flex items-center justify-center gap-2">
+              <User className="h-8 w-8" />
+              My Profile
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Email Display */}
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Mail className="h-5 w-5 text-gray-600" />
+                <Label className="text-sm font-bold text-gray-600">Email</Label>
+              </div>
+              <p className="text-black font-semibold">{user.email}</p>
+            </div>
 
-                {/* Editable Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="full_name" className="text-sm font-bold flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Full Name
-                    </Label>
-                    <Input
-                      id="full_name"
-                      value={profileData.full_name}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
-                      placeholder="Enter your full name"
-                      className="font-semibold border-wisteria/30"
-                    />
-                  </div>
+            {/* Editable Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="full_name" className="text-sm font-bold flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Full Name
+                </Label>
+                <Input
+                  id="full_name"
+                  value={profileData.full_name}
+                  onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
+                  placeholder="Enter your full name"
+                  className="font-semibold border-wisteria/30"
+                />
+              </div>
 
-                  <div>
-                    <Label htmlFor="business_name" className="text-sm font-bold flex items-center gap-2">
-                      <Building className="h-4 w-4" />
-                      Business Name
-                    </Label>
-                    <Input
-                      id="business_name"
-                      value={profileData.business_name}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, business_name: e.target.value }))}
-                      placeholder="Enter your business name"
-                      className="font-semibold border-wisteria/30"
-                    />
-                  </div>
-                </div>
+              <div>
+                <Label htmlFor="business_name" className="text-sm font-bold flex items-center gap-2">
+                  <Building className="h-4 w-4" />
+                  Business Name
+                </Label>
+                <Input
+                  id="business_name"
+                  value={profileData.business_name}
+                  onChange={(e) => setProfileData(prev => ({ ...prev, business_name: e.target.value }))}
+                  placeholder="Enter your business name"
+                  className="font-semibold border-wisteria/30"
+                />
+              </div>
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="location" className="text-sm font-bold flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      Location
-                    </Label>
-                    <Input
-                      id="location"
-                      value={profileData.location}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="Enter your location"
-                      className="font-semibold border-wisteria/30"
-                    />
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="location" className="text-sm font-bold flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Location
+                </Label>
+                <Input
+                  id="location"
+                  value={profileData.location}
+                  onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Enter your location"
+                  className="font-semibold border-wisteria/30"
+                />
+              </div>
 
-                  <div>
-                    <Label className="text-sm font-bold flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Role
-                    </Label>
-                    <Select value={profileData.role} onValueChange={(value: 'vendor' | 'supplier') => setProfileData(prev => ({ ...prev, role: value }))}>
-                      <SelectTrigger className="font-semibold border-wisteria/30">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="vendor">Vendor</SelectItem>
-                        <SelectItem value="supplier">Supplier</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+              <div>
+                <Label className="text-sm font-bold flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Role
+                </Label>
+                <Select value={profileData.role} onValueChange={(value: 'vendor' | 'supplier') => setProfileData(prev => ({ ...prev, role: value }))}>
+                  <SelectTrigger className="font-semibold border-wisteria/30">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="vendor">Vendor</SelectItem>
+                    <SelectItem value="supplier">Supplier</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-                <div>
-                  <Label htmlFor="phone" className="text-sm font-bold flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    Mobile Number
-                  </Label>
-                  <Input
-                    id="phone"
-                    value={profileData.phone}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="Enter your mobile number"
-                    className="font-semibold border-wisteria/30"
-                  />
-                </div>
+            <div>
+              <Label htmlFor="phone" className="text-sm font-bold flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                Mobile Number
+              </Label>
+              <Input
+                id="phone"
+                value={profileData.phone}
+                onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="Enter your mobile number"
+                className="font-semibold border-wisteria/30"
+              />
+            </div>
 
-                <div>
-                  <Label htmlFor="about" className="text-sm font-bold flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    About (Coming Soon)
-                  </Label>
-                  <Textarea
-                    id="about"
-                    value={profileData.about}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, about: e.target.value }))}
-                    placeholder="Tell us about yourself... (This field will be saved once database is updated)"
-                    className="font-semibold border-wisteria/30 min-h-[100px]"
-                    disabled
-                  />
-                  <p className="text-xs text-gray-500 mt-1">This field is temporarily disabled until the database schema is updated.</p>
-                </div>
+            <div>
+              <Label htmlFor="about" className="text-sm font-bold flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                About (Coming Soon)
+              </Label>
+              <Textarea
+                id="about"
+                value={profileData.about}
+                onChange={(e) => setProfileData(prev => ({ ...prev, about: e.target.value }))}
+                placeholder="Tell us about yourself... (This field will be saved once database is updated)"
+                className="font-semibold border-wisteria/30 min-h-[100px]"
+                disabled
+              />
+              <p className="text-xs text-gray-500 mt-1">This field is temporarily disabled until the database schema is updated.</p>
+            </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-4 pt-4">
-                  <Button 
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold"
-                  >
-                    {saving ? 'Saving...' : 'Save Changes'}
-                  </Button>
-                  
-                  <Button 
-                    onClick={handleSignOut}
-                    variant="outline"
-                    className="flex items-center gap-2 border-2 border-wisteria/30 text-wisteria hover:bg-wisteria hover:text-white font-bold"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Sign Out
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+            {/* Action Buttons */}
+            <div className="flex gap-4 pt-4">
+              <Button 
+                onClick={handleSave}
+                disabled={saving}
+                className="flex-1 bg-[#59D35D] hover:bg-[#4BC44F] text-black font-bold"
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+              
+              <Button 
+                onClick={handleSignOut}
+                variant="outline"
+                className="flex items-center gap-2 border-2 border-wisteria/30 text-wisteria hover:bg-wisteria hover:text-white font-bold"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
