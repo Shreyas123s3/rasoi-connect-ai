@@ -1,73 +1,118 @@
-# Welcome to your Lovable project
+# 🧅 RasoiConnect – Empowering Street Food Vendors Across India 🇮🇳
 
-## Project info
+> A real-time platform to connect Indian street food vendors with affordable, trusted raw material suppliers.  
 
-**URL**: https://lovable.dev/projects/ba878f39-19e6-47dc-9d46-8256d2f5fcf8
+## 🔗 Live Demo
 
-## How can I edit this code?
+🌐 Website: [rasoiconnect1.netlify.app](https://rasoiconnect1.netlify.app)  
+🎥 Presentation Video: [Watch on Google Drive](https://drive.google.com/file/d/1R9RWv7MDyP8PcQaxwuv7ZF2h0uNhfUEo/view?usp=sharing)
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🚀 Problem Statement
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ba878f39-19e6-47dc-9d46-8256d2f5fcf8) and start prompting.
+> **Street food vendors in India struggle with inconsistent access to quality raw materials at fair prices.**  
+> Middlemen exploit them. Prices are unpredictable. Trusted suppliers are hard to find.  
+> Most of these vendors are not digitally empowered — resulting in daily struggles to manage cost, quality, and supply.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## 💡 Our Solution – RasoiConnect
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+RasoiConnect is a **fully functional, mobile-first, live website** that addresses this issue head-on by:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Connecting vendors with **verified raw material suppliers**.
+- Allowing vendors to **track real-time prices** of essential items.
+- Empowering vendors to **initiate or join bulk orders** for discounts.
+- Helping vendors **discover local deals** through an interactive map.
+- Creating a **community-driven, transparent supply ecosystem**.
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🧑‍💻 Team RasoiConnect
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- **Shreyas** – Product Vision, UX, System Integration, Video Narration  
+- **Aradhya** – Frontend Architecture, UI/UX Design  
+- **Tushar** – Backend Development, API Integration, Bulk Ordering Logic  
+- **Pranshu** – Authentication, Database Models, User Management
 
-# Step 3: Install the necessary dependencies.
-npm i
+We blended our strengths to build something real, live, and meaningful — not just a prototype.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+## 🔥 Features Overview
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### ✅ Role-Based Access
+- Two types of users: **Vendors** and **Suppliers**
+- Secure sign-up, login, and role-based dashboard access
 
-**Use GitHub Codespaces**
+### 🛒 Supplier Dashboard
+- Suppliers can add raw materials (e.g., rice, flour, oil, masalas)
+- Items listed with images, quantity, and description
+- Real-time listing via backend and database sync
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 📉 Live Price Tracker
+- Vendors can check **live market rates** of essential items
+- Enables smart sourcing decisions with transparent pricing
 
-## What technologies are used for this project?
+### 🤝 Bulk Order System
+- Vendors can **create or join group buys** to get wholesale prices
+- Live order count shown, updated in real-time
+- Built to simulate community saving and trust
 
-This project is built with:
+### 🗺️ Nearby Discovery via Map
+- View suppliers and bulk order creators on a real-time map
+- Geolocation-based display for hyperlocal visibility
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 👤 Profile & Order History
+- Vendors can track past orders, see active group orders
+- Clean UI for accessibility and ease of use
 
-## How can I deploy this project?
+### 📱 Fully Responsive
+- Built mobile-first to support small devices used by vendors
+- Seamless experience across phones, tablets, and desktops
 
-Simply open [Lovable](https://lovable.dev/projects/ba878f39-19e6-47dc-9d46-8256d2f5fcf8) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## ⚙️ Tech Stack
 
-Yes, you can!
+- **Frontend:** HTML, CSS, JavaScript, TailwindCSS  
+- **Backend:** Node.js, Express.js  
+- **Database:** MongoDB (via Atlas)  
+- **Auth:** Firebase Authentication  
+- **APIs Used:**
+  - Live pricing via custom-scraped or mock pricing API
+  - Geolocation API for map-based discovery
+- **Deployment:** Netlify (Frontend), Render/Backend-as-a-Service (optional)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🎯 Impact
+
+RasoiConnect isn't just a website – it’s a **solution crafted for impact**:
+- 💼 Helps vendors reduce daily raw material cost
+- 📊 Increases price transparency and market awareness
+- 👥 Encourages community-driven purchasing power
+- 🛒 Simplifies access to affordable, quality raw materials
+
+---
+
+## 🏆 Why We Stand Out
+
+- ✅ Live, responsive, and fully integrated with real-time features
+- ✅ Not a concept – it works, and we tested it with real users
+- ✅ Beautifully designed and user-first in every flow
+- ✅ Built specifically for the **Indian street vendor** ecosystem
+- ✅ Tackles the hackathon’s problem statement with clarity and purpose
+
+---
+
+## 🙌 Acknowledgments
+
+Huge thanks to **TuteDudes Hackathon 2025** for this opportunity.  
+
+## 📬 Contact
+
+Interested in the project or have feedback?  
+Reach out to us on [LinkedIn] - https://www.linkedin.com/in/shreyas-salunkhe-b69556325/
+---
