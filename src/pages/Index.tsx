@@ -35,15 +35,11 @@ const Index = () => {
     }
   ];
 
-  const marqueeItems = [
-    "🌟 2,500+ Active Vendors Trust RasoiLink",
-    "✅ 850+ FSSAI Verified Suppliers",
-    "📍 Now Available in 25+ Cities",
-    "💰 Save Up to 30% on Ingredient Costs",
-    "🚀 Join the Future of Food Procurement",
-    "🤝 Connect. Source. Save. Grow Together",
-    "⚡ Same-Day Delivery Available",
-    "🔒 100% Secure & Verified Platform"
+  const stats = [
+    { label: "Active Vendors", value: "2,500+" },
+    { label: "Verified Suppliers", value: "850+" },
+    { label: "Cities Covered", value: "25+" },
+    { label: "Cost Savings", value: "30%" }
   ];
 
   return (
@@ -78,22 +74,16 @@ const Index = () => {
             </Link>
           </div>
 
-          {/* Scrolling Marquee */}
-          <div className="relative overflow-hidden bg-gradient-to-r from-[#59D35D] via-white to-wisteria rounded-lg shadow-lg mb-16">
-            <div className="flex animate-[scroll_30s_linear_infinite] whitespace-nowrap">
-              {[...marqueeItems, ...marqueeItems].map((item, index) => (
-                <div
-                  key={index}
-                  className="flex-shrink-0 px-8 py-6 text-2xl font-black text-black bg-gradient-to-r from-transparent via-lemon/30 to-transparent"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-[#59D35D] to-transparent"></div>
-              <div className="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-wisteria to-transparent"></div>
-            </div>
+          {/* Enhanced Stats with Lemon background and Wisteria accents */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+            {stats.map((stat, index) => (
+              <Card key={index} className="bg-lemon backdrop-blur-sm border-2 border-wisteria hover:shadow-lg hover:shadow-wisteria/20 transition-all">
+                <CardContent className="p-6 text-center">
+                  <div className="text-3xl font-black text-wisteria mb-2">{stat.value}</div>
+                  <div className="text-sm font-semibold text-gray-800">{stat.label}</div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
