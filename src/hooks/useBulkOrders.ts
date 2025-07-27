@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 export interface BulkOrder {
   id: string;
@@ -27,6 +28,7 @@ export const useBulkOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const fetchBulkOrders = async () => {
     try {
@@ -67,13 +69,34 @@ export const useBulkOrders = () => {
     }
   };
 
-  const joinBulkOrder = async (bulkOrderId: string, quantity: number) => {
+  const joinBulkOrder = async (bulkOrderId: string, quantity: number = 1) => {
     if (!user) {
-      console.error('User must be logged in to join bulk orders');
+      toast({
+        title: "Authentication Required",
+        description: "You must be logged in to join bulk orders",
+        variant: "destructive",
+      });
       return false;
     }
 
     try {
+      // Check if user has already joined this bulk order
+      const { data: existingParticipation } = await supabase
+        .from('bulk_order_participants')
+        .select('id')
+        .eq('bulk_order_id', bulkOrderId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingParticipation) {
+        toast({
+          title: "Already Joined",
+          description: "You have already joined this bulk order",
+          variant: "destructive",
+        });
+        return false;
+      }
+
       // First, add the user to bulk_order_participants
       const { error: insertError } = await supabase
         .from('bulk_order_participants')
@@ -85,6 +108,11 @@ export const useBulkOrders = () => {
 
       if (insertError) {
         console.error('Error joining bulk order:', insertError);
+        toast({
+          title: "Error",
+          description: "Failed to join bulk order",
+          variant: "destructive",
+        });
         return false;
       }
 
@@ -109,11 +137,38 @@ export const useBulkOrders = () => {
         }
       }
 
+      toast({
+        title: "Success",
+        description: "Successfully joined the bulk order!",
+      });
+
       // Refresh bulk orders
       await fetchBulkOrders();
       return true;
     } catch (err) {
       console.error('Error joining bulk order:', err);
+      toast({
+        title: "Error",
+        description: "Failed to join bulk order",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  const checkUserParticipation = async (bulkOrderId: string) => {
+    if (!user) return false;
+
+    try {
+      const { data } = await supabase
+        .from('bulk_order_participants')
+        .select('id')
+        .eq('bulk_order_id', bulkOrderId)
+        .eq('user_id', user.id)
+        .single();
+
+      return !!data;
+    } catch (error) {
       return false;
     }
   };
@@ -127,6 +182,7 @@ export const useBulkOrders = () => {
     loading,
     error,
     joinBulkOrder,
+    checkUserParticipation,
     refetch: fetchBulkOrders
   };
 };

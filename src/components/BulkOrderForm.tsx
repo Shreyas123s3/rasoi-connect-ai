@@ -31,7 +31,6 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
     title: '',
     description: '',
     product_id: '',
-    quantity_needed: '',
     target_price: '',
     current_price: '',
     minimum_quantity: '',
@@ -79,7 +78,6 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
           title: formData.title,
           description: formData.description,
           product_id: formData.product_id,
-          quantity_needed: parseInt(formData.quantity_needed),
           target_price: parseFloat(formData.target_price),
           current_price: parseFloat(formData.current_price),
           minimum_quantity: parseInt(formData.minimum_quantity),
@@ -179,36 +177,19 @@ const BulkOrderForm: React.FC<BulkOrderFormProps> = ({ onClose, onSuccess }) => 
               </Select>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="quantity_needed" className="text-sm font-bold">
-                  Quantity Needed * {selectedProduct && `(${selectedProduct.unit})`}
-                </Label>
-                <Input
-                  id="quantity_needed"
-                  type="number"
-                  value={formData.quantity_needed}
-                  onChange={(e) => setFormData(prev => ({ ...prev, quantity_needed: e.target.value }))}
-                  placeholder="100"
-                  className="font-semibold"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="minimum_quantity" className="text-sm font-bold">
-                  Minimum Quantity * {selectedProduct && `(${selectedProduct.unit})`}
-                </Label>
-                <Input
-                  id="minimum_quantity"
-                  type="number"
-                  value={formData.minimum_quantity}
-                  onChange={(e) => setFormData(prev => ({ ...prev, minimum_quantity: e.target.value }))}
-                  placeholder="50"
-                  className="font-semibold"
-                  required
-                />
-              </div>
+            <div>
+              <Label htmlFor="minimum_quantity" className="text-sm font-bold">
+                Minimum Quantity * {selectedProduct && `(${selectedProduct.unit})`}
+              </Label>
+              <Input
+                id="minimum_quantity"
+                type="number"
+                value={formData.minimum_quantity}
+                onChange={(e) => setFormData(prev => ({ ...prev, minimum_quantity: e.target.value }))}
+                placeholder="50"
+                className="font-semibold"
+                required
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,12 +10,42 @@ import BulkOrderForm from '@/components/BulkOrderForm';
 
 const BulkOrders = () => {
   const { user } = useAuth();
-  const { bulkOrders, loading, refetch } = useBulkOrders();
+  const { bulkOrders, loading, joinBulkOrder, checkUserParticipation, refetch } = useBulkOrders();
   const [showForm, setShowForm] = useState(false);
+  const [participationStatus, setParticipationStatus] = useState<{ [key: string]: boolean }>({});
 
   const handleFormSuccess = () => {
     refetch();
   };
+
+  const handleJoinOrder = async (bulkOrderId: string) => {
+    const success = await joinBulkOrder(bulkOrderId);
+    if (success) {
+      setParticipationStatus(prev => ({ ...prev, [bulkOrderId]: true }));
+    }
+  };
+
+  useEffect(() => {
+    if (user && bulkOrders.length > 0) {
+      // Check participation status for all bulk orders
+      const checkParticipation = async () => {
+        const statusPromises = bulkOrders.map(async (order) => {
+          const hasJoined = await checkUserParticipation(order.id);
+          return { orderId: order.id, hasJoined };
+        });
+        
+        const results = await Promise.all(statusPromises);
+        const statusMap = results.reduce((acc, { orderId, hasJoined }) => {
+          acc[orderId] = hasJoined;
+          return acc;
+        }, {} as { [key: string]: boolean });
+        
+        setParticipationStatus(statusMap);
+      };
+
+      checkParticipation();
+    }
+  }, [user, bulkOrders, checkUserParticipation]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -116,82 +146,93 @@ const BulkOrders = () => {
           <h2 className="text-2xl font-black text-black mb-6">Live Bulk Orders</h2>
           {bulkOrders && bulkOrders.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {bulkOrders.map((order) => (
-                <Card key={order.id} className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30 hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <CardTitle className="text-lg font-black text-black line-clamp-2">
-                        {order.title}
-                      </CardTitle>
-                      <Badge className={getStatusColor(order.status)}>
-                        {order.status}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-black/70 line-clamp-2">{order.description}</p>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center text-sm">
-                      <MapPin className="h-4 w-4 text-wisteria mr-2" />
-                      <span className="font-semibold text-black">{order.location}</span>
-                    </div>
-                    
-                    <div className="flex items-center text-sm">
-                      <Calendar className="h-4 w-4 text-wisteria mr-2" />
-                      <span className="font-semibold text-black">
-                        Expires: {formatDate(order.expires_at)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs text-black/70">Target Price</p>
-                        <p className="font-black text-[#59D35D]">₹{order.target_price}</p>
+              {bulkOrders.map((order) => {
+                const hasJoined = participationStatus[order.id] || false;
+                const participationPercentage = Math.round(((order.current_participants || 1) / order.target_participants) * 100);
+                
+                return (
+                  <Card key={order.id} className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30 hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="flex justify-between items-start mb-2">
+                        <CardTitle className="text-lg font-black text-black line-clamp-2">
+                          {order.title}
+                        </CardTitle>
+                        <Badge className={getStatusColor(order.status)}>
+                          {order.status}
+                        </Badge>
                       </div>
-                      <div>
-                        <p className="text-xs text-black/70">Current Price</p>
-                        <p className="font-black text-red-600">₹{order.current_price}</p>
+                      <p className="text-sm text-black/70 line-clamp-2">{order.description}</p>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center text-sm">
+                        <MapPin className="h-4 w-4 text-wisteria mr-2" />
+                        <span className="font-semibold text-black">{order.location}</span>
                       </div>
-                    </div>
+                      
+                      <div className="flex items-center text-sm">
+                        <Calendar className="h-4 w-4 text-wisteria mr-2" />
+                        <span className="font-semibold text-black">
+                          Expires: {formatDate(order.expires_at)}
+                        </span>
+                      </div>
 
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs text-black/70">Participants</p>
-                        <p className="font-black text-black">
-                          {order.current_participants || 1}/{order.target_participants}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-black/70">Target Price</p>
+                          <p className="font-black text-[#59D35D]">₹{order.target_price}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-black/70">Current Price</p>
+                          <p className="font-black text-red-600">₹{order.current_price}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-black/70">Participants</p>
+                          <p className="font-black text-black">
+                            {order.current_participants || 1}/{order.target_participants}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-black/70">Min. Quantity</p>
+                          <p className="font-black text-black">{order.minimum_quantity}</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
+                        <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                          <div 
+                            className="bg-[#59D35D] h-2 rounded-full" 
+                            style={{ 
+                              width: `${Math.min(100, participationPercentage)}%` 
+                            }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-center text-black/70">
+                          {participationPercentage}% of target reached
                         </p>
                       </div>
-                      <div>
-                        <p className="text-xs text-black/70">Min. Quantity</p>
-                        <p className="font-black text-black">{order.minimum_quantity}</p>
-                      </div>
-                    </div>
 
-                    <div className="pt-2">
-                      <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                        <div 
-                          className="bg-[#59D35D] h-2 rounded-full" 
-                          style={{ 
-                            width: `${Math.min(100, ((order.current_participants || 1) / order.target_participants) * 100)}%` 
-                          }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-center text-black/70">
-                        {Math.round(((order.current_participants || 1) / order.target_participants) * 100)}% of target reached
-                      </p>
-                    </div>
-
-                    {user && order.status === 'active' && (
-                      <Button 
-                        className="w-full bg-wisteria hover:bg-wisteria/90 text-white font-bold"
-                        size="sm"
-                      >
-                        <Users className="mr-2 h-4 w-4" />
-                        Join Order
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+                      {user && order.status === 'active' && (
+                        <Button 
+                          onClick={() => handleJoinOrder(order.id)}
+                          disabled={hasJoined}
+                          className={`w-full font-bold ${
+                            hasJoined 
+                              ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                              : 'bg-wisteria hover:bg-wisteria/90 text-white'
+                          }`}
+                          size="sm"
+                        >
+                          <Users className="mr-2 h-4 w-4" />
+                          {hasJoined ? 'Already Joined' : 'Join Order'}
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             <Card className="bg-white/90 backdrop-blur-sm border-2 border-wisteria/30">
