@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bell, Plus, Trash2, Edit, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Bell, Plus, Trash2, Edit, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Navbar from '@/components/Navbar';
+import LivePriceTracker from '@/components/LivePriceTracker';
 import { useSupabaseAlerts } from '@/hooks/useSupabaseAlerts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -17,30 +18,6 @@ const Alerts = () => {
   const { alerts, loading, addAlert, deleteAlert } = useSupabaseAlerts();
   const { user } = useAuth();
   const { toast } = useToast();
-
-  const [recentNotifications, setRecentNotifications] = useState([
-    {
-      id: 1,
-      message: 'Onion prices dropped to ₹32/kg - 8% below your threshold',
-      time: '2 hours ago',
-      type: 'price_drop',
-      read: false
-    },
-    {
-      id: 2,
-      message: 'New bulk order for Rice started - join to save 15%',
-      time: '5 hours ago',
-      type: 'bulk_order',
-      read: false
-    },
-    {
-      id: 3,
-      message: 'Cooking Oil stock running low at your preferred supplier',
-      time: '1 day ago',
-      type: 'stock_alert',
-      read: true
-    }
-  ]);
 
   const [newAlert, setNewAlert] = useState({
     product: '',
@@ -93,15 +70,6 @@ const Alerts = () => {
     if (alert.status === 'triggered') return { color: 'bg-red-100 text-red-800', text: 'Triggered' };
     if (alert.status === 'active') return { color: 'bg-green-100 text-green-800', text: 'Active' };
     return { color: 'bg-gray-100 text-gray-800', text: 'Inactive' };
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'price_drop': return <TrendingDown className="h-4 w-4 text-green-500" />;
-      case 'bulk_order': return <Bell className="h-4 w-4 text-blue-500" />;
-      case 'stock_alert': return <AlertTriangle className="h-4 w-4 text-orange-500" />;
-      default: return <Bell className="h-4 w-4 text-gray-500" />;
-    }
   };
 
   // Show login prompt if user is not authenticated
@@ -291,43 +259,10 @@ const Alerts = () => {
               </Card>
             </div>
 
-            {/* Notifications Panel */}
+            {/* Live Price Tracker and Settings */}
             <div className="lg:col-span-1">
-              <Card className="bg-gradient-to-br from-white to-lemon/30 backdrop-blur-sm border-2 border-wisteria/30">
-                <CardHeader>
-                  <CardTitle className="text-xl font-black text-black flex items-center">
-                    <Bell className="h-5 w-5 mr-2" />
-                    Recent Notifications
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentNotifications.map(notification => (
-                      <div 
-                        key={notification.id} 
-                        className={`p-4 rounded-lg border-2 ${notification.read ? 'bg-gray-50 border-gray-200' : 'bg-gradient-to-r from-wisteria/20 to-lemon/20 border-wisteria/30'}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          {getNotificationIcon(notification.type)}
-                          <div className="flex-1">
-                            <p className={`text-sm font-semibold ${notification.read ? 'text-gray-700' : 'text-black'}`}>
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
-                          </div>
-                          {!notification.read && (
-                            <div className="w-2 h-2 bg-wisteria rounded-full"></div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <Button variant="outline" className="w-full mt-4 border-2 border-wisteria/40 font-bold hover:bg-wisteria/10">
-                    View All Notifications
-                  </Button>
-                </CardContent>
-              </Card>
+              {/* Live Price Tracker */}
+              <LivePriceTracker alerts={alerts} />
 
               {/* Alert Settings */}
               <Card className="bg-gradient-to-br from-wisteria/30 to-white backdrop-blur-sm border-2 border-wisteria/30 mt-6">
